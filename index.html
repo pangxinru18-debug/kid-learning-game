@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>快乐学习乐园</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="学习乐园">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FFF8E7">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+<style>
+/* ========== CSS Variables ========== */
+:root {
+  --bg: #FFF8E7;
+  --card: #FFFFFF;
+  --math: #FF6B6B;
+  --math-light: #FFE0E0;
+  --english: #4ECDC4;
+  --english-light: #E0F7F5;
+  --star: #FFD93D;
+  --success: #6BCB77;
+  --wrong: #FF6B6B;
+  --text: #2C3E50;
+  --text-light: #7F8C8D;
+  --btn-primary: #FF8C42;
+  --btn-secondary: #A66CFF;
+  --btn-hover: #FF9F5C;
+  --shadow: 0 4px 15px rgba(0,0,0,0.08);
+  --shadow-btn: 0 6px 20px rgba(0,0,0,0.12);
+  --radius: 20px;
+  --radius-btn: 16px;
+}
+
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+  background: linear-gradient(135deg, #FFF8E7 0%, #FFECD2 30%, #E8F4FD 70%, #FFF8E7 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#app { max-width: 800px; margin: 0 auto; padding: 10px; min-height: 100vh; position: relative; }
+
+/* ========== Screen Management ========== */
+.screen { display: none; animation: fadeIn 0.3s ease; }
+.screen.active { display: block; }
+
+/* ========== Top Bar ========== */
+#top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: white; border-radius: var(--radius-btn); padding: 12px 18px;
+  box-shadow: var(--shadow); margin-bottom: 16px; gap: 10px;
+}
+.btn-back {
+  background: var(--btn-secondary); color: white; border: none;
+  border-radius: 12px; padding: 8px 16px; font-size: 1rem;
+  font-family: inherit; cursor: pointer; font-weight: 700;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-back:hover { transform: scale(1.05); box-shadow: var(--shadow-btn); }
+.btn-back:active { transform: scale(0.95); }
+.star-display { display: flex; align-items: center; gap: 6px; font-size: 1.3rem; font-weight: 800; }
+.star-display .star-icon { font-size: 1.5rem; animation: starPulse 1.5s ease-in-out infinite; }
+.combo-display { font-size: 1.1rem; font-weight: 700; color: #FF6B35; min-width: 60px; }
+.combo-display.active { animation: fireFlicker 0.3s ease-in-out infinite; }
+
+/* ========== Home Screen ========== */
+#screen-home { text-align: center; padding-top: 20px; }
+.home-title {
+  font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 900;
+  background: linear-gradient(135deg, #FF6B6B, #FF8C42, #FFD93D, #4ECDC4, #A66CFF);
+  background-size: 300% 300%; -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  animation: rainbowShift 3s ease-in-out infinite, titleBounce 2s ease-in-out infinite;
+  margin-bottom: 8px; line-height: 1.3;
+}
+.home-subtitle { font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px; }
+.subject-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+.subject-card {
+  background: white; border-radius: var(--radius); padding: 30px 24px;
+  box-shadow: var(--shadow-btn); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  width: 220px; text-align: center; position: relative; overflow: hidden;
+}
+.subject-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
+.subject-card:active { transform: scale(0.95); }
+.subject-card.math-card { border-bottom: 6px solid var(--math); }
+.subject-card.english-card { border-bottom: 6px solid var(--english); }
+.subject-card .card-emoji { font-size: 4rem; margin-bottom: 10px; }
+.subject-card .card-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+.subject-card.math-card .card-title { color: var(--math); }
+.subject-card.english-card .card-title { color: var(--english); }
+.subject-card .card-stars { font-size: 1.1rem; color: var(--star); }
+
+/* ========== Subject Menu ========== */
+.menu-title { text-align: center; font-size: 2rem; font-weight: 800; margin-bottom: 20px; }
+.menu-title.math-color { color: var(--math); }
+.menu-title.english-color { color: var(--english); }
+.module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.module-card {
+  background: white; border-radius: var(--radius); padding: 20px 16px;
+  box-shadow: var(--shadow); cursor: pointer; text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s; position: relative;
+}
+.module-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-btn); }
+.module-card .mod-emoji { font-size: 2.5rem; margin-bottom: 8px; }
+.module-card .mod-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 4px; }
+.module-card .mod-desc { font-size: 0.85rem; color: var(--text-light); }
+.module-card .mod-level { font-size: 0.8rem; color: var(--btn-primary); font-weight: 700; margin-top: 6px; }
+.module-card.locked { opacity: 0.5; pointer-events: none; }
+.module-card.locked::after { content: '🔒'; font-size: 2rem; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+/* ========== Game Screen Common ========== */
+.game-header { text-align: center; margin-bottom: 16px; }
+.game-level { font-size: 1rem; color: var(--btn-primary); font-weight: 700; }
+.question-area {
+  background: white; border-radius: var(--radius); padding: 30px 20px;
+  box-shadow: var(--shadow); text-align: center; margin-bottom: 16px;
+  min-height: 120px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; transition: transform 0.15s;
+}
+.question-area.shake { animation: shake 0.5s ease; }
+.question-text { font-size: clamp(1.6rem, 4vw, 2.5rem); font-weight: 700; line-height: 1.5; }
+.question-emoji { font-size: 5rem; margin-bottom: 10px; }
+.question-hint { font-size: 1rem; color: var(--text-light); margin-top: 8px; }
+.answer-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;
+}
+.answer-btn {
+  background: white; border: 3px solid #E8E8E8; border-radius: var(--radius-btn);
+  padding: 20px; font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 700;
+  font-family: inherit; cursor: pointer; transition: transform 0.15s, border-color 0.15s, background 0.15s;
+  box-shadow: var(--shadow-btn); min-height: 70px;
+}
+.answer-btn:hover { border-color: var(--btn-primary); transform: scale(1.03); }
+.answer-btn:active { transform: scale(0.95); }
+.answer-btn.correct { background: #D4EDDA; border-color: var(--success); animation: correctPopIn 0.4s ease; }
+.answer-btn.wrong { background: #F8D7DA; border-color: var(--wrong); }
+.answer-btn:disabled { pointer-events: none; opacity: 0.7; }
+
+/* ========== Progress Bar ========== */
+.progress-wrap { background: white; border-radius: 12px; padding: 10px 16px; box-shadow: var(--shadow); margin-bottom: 12px; }
+.progress-bar { height: 12px; background: #E8E8E8; border-radius: 6px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), #4ECDC4); border-radius: 6px; transition: width 0.4s ease; }
+.progress-text { text-align: center; font-size: 0.9rem; color: var(--text-light); margin-top: 4px; }
+
+/* ========== Results Screen ========== */
+.results-box {
+  background: white; border-radius: var(--radius); padding: 30px 24px;
+  box-shadow: var(--shadow-btn); text-align: center;
+}
+.results-emoji { font-size: 4rem; margin-bottom: 10px; }
+.results-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.results-stars { font-size: 2.5rem; margin: 10px 0; }
+.results-stats { text-align: left; display: inline-block; margin: 16px 0; }
+.results-stats div { font-size: 1.1rem; margin: 6px 0; }
+.btn-big {
+  display: block; width: 100%; max-width: 300px; margin: 10px auto;
+  padding: 16px; border: none; border-radius: var(--radius-btn);
+  font-size: 1.3rem; font-weight: 700; font-family: inherit; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s; box-shadow: var(--shadow-btn);
+}
+.btn-big:hover { transform: scale(1.03); }
+.btn-big:active { transform: scale(0.95); }
+.btn-retry { background: var(--btn-primary); color: white; }
+.btn-menu { background: var(--btn-secondary); color: white; }
+
+/* ========== Achievements ========== */
+.achieve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.achieve-card {
+  background: white; border-radius: var(--radius-btn); padding: 16px;
+  text-align: center; box-shadow: var(--shadow);
+}
+.achieve-card.locked { opacity: 0.4; filter: grayscale(100%); }
+.achieve-card .ach-icon { font-size: 2.5rem; margin-bottom: 6px; }
+.achieve-card .ach-name { font-size: 0.95rem; font-weight: 700; }
+
+/* ========== Spelling Letter Tiles ========== */
+.letter-tiles { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 16px; }
+.letter-tile {
+  background: white; border: 3px solid #E8E8E8; border-radius: 12px;
+  padding: 14px 18px; font-size: 1.5rem; font-weight: 800; cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s; box-shadow: var(--shadow);
+}
+.letter-tile:hover { border-color: var(--btn-primary); transform: scale(1.08); }
+.letter-tile:active { transform: scale(0.9); }
+.letter-tile.used { opacity: 0.3; pointer-events: none; }
+.answer-slots { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; min-height: 50px; margin-bottom: 12px; }
+.answer-slot {
+  width: 44px; height: 50px; border-bottom: 3px solid var(--text);
+  font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; justify-content: center;
+}
+.answer-slot.filled { border-color: var(--btn-primary); }
+.spelling-input-area { margin-top: 16px; }
+.spelling-input-area input {
+  font-size: 1.5rem; padding: 12px; border: 3px solid #E8E8E8; border-radius: 12px;
+  text-align: center; font-family: inherit; width: 200px;
+}
+.spelling-input-area input:focus { border-color: var(--btn-primary); outline: none; }
+
+/* ========== Dot Array Visual ========== */
+.dot-array { display: inline-grid; gap: 6px; margin: 10px 0; }
+.dot-array .dot { width: 14px; height: 14px; background: var(--math); border-radius: 50%; }
+
+/* ========== Feedback Overlay ========== */
+#feedback-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none; z-index: 100; display: flex;
+  align-items: center; justify-content: center;
+}
+.feedback-toast {
+  background: white; border-radius: var(--radius-btn); padding: 16px 28px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2); font-size: 1.4rem; font-weight: 800;
+  animation: toastPop 1.2s ease forwards;
+}
+
+/* ========== Particle ========== */
+.particle {
+  position: fixed; pointer-events: none; z-index: 99;
+  font-size: 1.5rem; animation: particleFly 1s ease-out forwards;
+}
+
+/* ========== Animations ========== */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes titleBounce { 0%,100%{transform:translateY(0)} 25%{transform:translateY(-12px)} 50%{transform:translateY(0)} 75%{transform:translateY(-6px)} }
+@keyframes rainbowShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+@keyframes starPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)} 40%{transform:translateX(10px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
+@keyframes correctPopIn { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1)} }
+@keyframes fireFlicker { 0%,100%{transform:scale(1) rotate(-2deg)} 50%{transform:scale(1.1) rotate(2deg)} }
+@keyframes toastPop { 0%{transform:scale(0.5);opacity:0} 30%{transform:scale(1.1);opacity:1} 100%{transform:scale(1) translateY(-60px);opacity:0} }
+@keyframes particleFly { 0%{transform:translateY(0) scale(0);opacity:1} 100%{transform:translateY(-120px) scale(1.2);opacity:0} }
+
+/* ========== Responsive ========== */
+@media (min-width: 768px) {
+  .answer-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+  .module-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1024px) {
+  #app { max-width: 820px; }
+}
+
+/* ========== Homework Mode ========== */
+.subject-card.homework-card { border-bottom: 6px solid #FF8C42; }
+.subject-card.homework-card .card-title { color: #FF8C42; }
+
+/* Setup */
+.hw-setup-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+.hw-task-card {
+  background: white; border-radius: var(--radius); padding: 14px 16px;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px;
+}
+.hw-task-card .hw-task-emoji { font-size: 2rem; flex-shrink: 0; }
+.hw-task-card .hw-task-info { flex: 1; min-width: 0; }
+.hw-task-card .hw-task-label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 4px; }
+.hw-task-card input {
+  width: 100%; padding: 10px 12px; border: 2px solid #E8E8E8; border-radius: 10px;
+  font-size: 1rem; font-family: inherit; background: #FAFAFA;
+}
+.hw-task-card input:focus { border-color: var(--btn-primary); outline: none; background: white; }
+.hw-task-card.chinese { border-left: 5px solid #FF6B6B; }
+.hw-task-card.math    { border-left: 5px solid #4ECDC4; }
+.hw-task-card.english { border-left: 5px solid #A66CFF; }
+
+.hw-quick-fill { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.hw-quick-fill button {
+  background: #F0F0F0; border: none; border-radius: 10px; padding: 8px 14px;
+  font-size: 0.85rem; font-family: inherit; cursor: pointer; font-weight: 600;
+  transition: background 0.15s;
+}
+.hw-quick-fill button:hover { background: #E0E0E0; }
+.hw-quick-fill button:active { background: var(--btn-primary); color: white; }
+
+/* Active Session */
+.hw-active-wrap { text-align: center; }
+.hw-timer-section { margin: 10px 0 20px; }
+.hw-timer {
+  font-size: clamp(3.5rem, 12vw, 5.5rem); font-weight: 900;
+  font-variant-numeric: tabular-nums; font-family: 'SF Mono','Consolas','Menlo',monospace;
+  line-height: 1; color: var(--text);
+}
+.hw-timer.warning { color: #FF8C42; animation: timerPulse 1s ease-in-out infinite; }
+.hw-timer.danger  { color: #FF6B6B; animation: timerPulse 0.5s ease-in-out infinite; }
+.hw-timer-label { font-size: 0.9rem; color: var(--text-light); margin-top: 4px; }
+@keyframes timerPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+.hw-current-card {
+  background: white; border-radius: var(--radius); padding: 20px 16px;
+  box-shadow: var(--shadow); margin-bottom: 16px;
+}
+.hw-current-subject { font-size: 0.85rem; color: var(--text-light); margin-bottom: 4px; }
+.hw-current-name { font-size: 1.6rem; font-weight: 800; margin-bottom: 4px; }
+.hw-current-desc { font-size: 1.05rem; color: var(--text); }
+
+.hw-progress-row { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
+.hw-progress-dot {
+  width: 44px; height: 44px; border-radius: 50%; display: flex;
+  align-items: center; justify-content: center; font-size: 1.3rem;
+  background: #E8E8E8; font-weight: 700; transition: all 0.3s;
+}
+.hw-progress-dot.done { background: #6BCB77; color: white; }
+.hw-progress-dot.current { background: #FF8C42; color: white; box-shadow: 0 0 0 5px rgba(255,140,66,0.25); }
+
+.hw-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.hw-btn {
+  padding: 14px 28px; border: none; border-radius: var(--radius-btn);
+  font-size: 1.15rem; font-weight: 700; font-family: inherit; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s; box-shadow: var(--shadow-btn);
+  min-width: 100px;
+}
+.hw-btn:hover { transform: scale(1.03); }
+.hw-btn:active { transform: scale(0.95); }
+.hw-btn.start   { background: #6BCB77; color: white; }
+.hw-btn.pause   { background: #FFD93D; color: var(--text); }
+.hw-btn.done    { background: #FF8C42; color: white; font-size: 1.3rem; }
+.hw-btn.secondary { background: var(--btn-secondary); color: white; }
+.hw-btn.ghost   { background: #EEE; color: #999; }
+
+/* Break Mode */
+.hw-break-wrap { text-align: center; padding: 20px 0; }
+.hw-break-emoji { font-size: 4rem; margin-bottom: 8px; animation: titleBounce 2s ease-in-out infinite; }
+.hw-break-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+.hw-break-hint { font-size: 0.95rem; color: var(--text-light); margin-bottom: 12px; }
+.hw-break-timer { font-size: 2.5rem; font-weight: 900; margin-bottom: 16px; color: #6BCB77; }
+
+/* Session Complete */
+.hw-done-emoji { font-size: 4rem; margin-bottom: 8px; }
+.hw-done-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; }
+.hw-done-stars { font-size: 2.2rem; margin: 10px 0; }
+.hw-done-stats { text-align: center; margin: 12px 0; font-size: 1rem; line-height: 1.8; }
+.hw-done-stats span { font-weight: 700; }
+
+/* History */
+.hw-history-list { display: flex; flex-direction: column; gap: 10px; }
+.hw-history-item {
+  background: white; border-radius: var(--radius-btn); padding: 14px 16px;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 12px;
+}
+.hw-history-item .hw-hist-date { font-size: 0.8rem; color: var(--text-light); }
+.hw-history-item .hw-hist-stars { font-weight: 800; font-size: 1.1rem; }
+.hw-history-item .hw-hist-subjects { font-size: 0.85rem; color: var(--text-light); }
+
+/* ========== Reduced Motion ========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Top Bar -->
+  <header id="top-bar">
+    <button class="btn-back" id="btnBack" onclick="goBack()">← 返回</button>
+    <div class="star-display"><span class="star-icon">⭐</span> <span id="starCount">0</span></div>
+    <div class="combo-display" id="comboDisplay"></div>
+  </header>
+
+  <!-- Screen: Home -->
+  <section class="screen active" id="screen-home">
+    <div class="home-title">快乐学习乐园</div>
+    <div class="home-subtitle">🎈 边玩边学，每天都进步！</div>
+    <div class="subject-cards">
+      <div class="subject-card math-card" onclick="navigateTo('math-menu')">
+        <div class="card-emoji">🧮</div>
+        <div class="card-title">数学</div>
+        <div class="card-stars">加减法 · 乘法 · 应用题</div>
+      </div>
+      <div class="subject-card english-card" onclick="navigateTo('english-menu')">
+        <div class="card-emoji">📖</div>
+        <div class="card-title">英语</div>
+        <div class="card-stars">单词 · 拼写 · 句子</div>
+      </div>
+      <div class="subject-card homework-card" onclick="navigateTo('homework-setup')">
+        <div class="card-emoji">📝</div>
+        <div class="card-title">作业模式</div>
+        <div class="card-stars">番茄钟 · 高效完成</div>
+      </div>
+    </div>
+    <button class="btn-big" style="background:var(--btn-secondary);color:white;max-width:220px;" onclick="navigateTo('achievements')">🏆 我的成就</button>
+  </section>
+
+  <!-- Screen: Homework Setup -->
+  <section class="screen" id="screen-homework-setup">
+    <div class="menu-title" style="color:#FF8C42;">📝 今日作业</div>
+    <div class="hw-quick-fill">
+      <button onclick="quickFillHomework()">📋 快速填入模板</button>
+      <button onclick="clearHomeworkTasks()">🗑 清空</button>
+    </div>
+    <div class="hw-setup-list">
+      <div class="hw-task-card chinese">
+        <div class="hw-task-emoji">📖</div>
+        <div class="hw-task-info">
+          <div class="hw-task-label">语文作业</div>
+          <input type="text" id="hwTaskChinese" placeholder="例如：背诵《望庐山瀑布》，写生字..." autocomplete="off">
+        </div>
+      </div>
+      <div class="hw-task-card math">
+        <div class="hw-task-emoji">🧮</div>
+        <div class="hw-task-info">
+          <div class="hw-task-label">数学作业</div>
+          <input type="text" id="hwTaskMath" placeholder="例如：课本第45页，口算练习..." autocomplete="off">
+        </div>
+      </div>
+      <div class="hw-task-card english">
+        <div class="hw-task-emoji">📖</div>
+        <div class="hw-task-info">
+          <div class="hw-task-label">英语作业</div>
+          <input type="text" id="hwTaskEnglish" placeholder="例如：朗读课文，默写单词..." autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <button class="btn-big" style="background:#FF8C42;color:white;" onclick="startHomework()">🚀 开始写作业！</button>
+    <button class="btn-big" style="background:#EEE;color:#999;margin-top:8px;" onclick="navigateTo('homework-history')">📊 历史记录</button>
+    <button class="btn-big btn-menu" style="margin-top:8px;" onclick="navigateTo('home')">🏠 返回首页</button>
+  </section>
+
+  <!-- Screen: Homework Active -->
+  <section class="screen" id="screen-homework-active">
+    <div class="hw-active-wrap">
+      <div class="hw-timer-section">
+        <div class="hw-timer" id="hwTimer">20:00</div>
+        <div class="hw-timer-label" id="hwTimerLabel">准备开始</div>
+      </div>
+      <div class="hw-progress-row" id="hwProgressRow">
+        <div class="hw-progress-dot" data-idx="0">📖</div>
+        <div class="hw-progress-dot" data-idx="1">🧮</div>
+        <div class="hw-progress-dot" data-idx="2">🔤</div>
+      </div>
+      <div class="hw-current-card">
+        <div class="hw-current-subject" id="hwCurSubjectLabel">语文</div>
+        <div class="hw-current-name" id="hwCurSubjectName">📖 语文</div>
+        <div class="hw-current-desc" id="hwCurTaskDesc"></div>
+      </div>
+      <div class="hw-controls" id="hwControls">
+        <button class="hw-btn start" id="hwBtnStart" onclick="hwToggleTimer()">▶ 开始计时</button>
+        <button class="hw-btn done" id="hwBtnDone" style="display:none;" onclick="hwCompleteSubject()">✅ 完成啦！</button>
+      </div>
+      <button class="hw-btn ghost" style="margin-top:12px;" onclick="hwQuitConfirm()">退出作业模式</button>
+    </div>
+  </section>
+
+  <!-- Screen: Homework Break -->
+  <section class="screen" id="screen-homework-break">
+    <div class="hw-break-wrap">
+      <div class="hw-break-emoji">☕</div>
+      <div class="hw-break-title">休息一下！</div>
+      <div class="hw-break-hint" id="hwBreakHint">下一项：📖 语文</div>
+      <div class="hw-break-timer" id="hwBreakTimer">3:00</div>
+      <button class="hw-btn start" onclick="hwSkipBreak()">⏭ 跳过休息</button>
+    </div>
+  </section>
+
+  <!-- Screen: Homework Done -->
+  <section class="screen" id="screen-homework-done">
+    <div class="results-box">
+      <div class="hw-done-emoji">🎉</div>
+      <div class="hw-done-title" id="hwDoneTitle">作业完成！</div>
+      <div class="hw-done-stars" id="hwDoneStars"></div>
+      <div class="hw-done-stats" id="hwDoneStats"></div>
+      <button class="btn-big btn-retry" onclick="navigateTo('homework-setup')">📝 重新布置作业</button>
+      <button class="btn-big btn-menu" onclick="navigateTo('home')">🏠 返回首页</button>
+    </div>
+  </section>
+
+  <!-- Screen: Homework History -->
+  <section class="screen" id="screen-homework-history">
+    <div class="menu-title" style="color:#FF8C42;">📊 作业历史</div>
+    <div class="hw-history-list" id="hwHistoryList"></div>
+    <div style="text-align:center;color:var(--text-light);margin:8px 0;" id="hwHistoryEmpty"></div>
+    <button class="btn-big btn-menu" onclick="navigateTo('homework-setup')" style="margin-top:16px;">📝 返回作业模式</button>
+    <button class="btn-big" style="background:#EEE;color:#999;max-width:200px;margin-top:8px;" onclick="clearHomeworkHistory()">🗑 清除历史</button>
+  </section>
+
+  <!-- Screen: Math Menu -->
+  <section class="screen" id="screen-math-menu">
+    <div class="menu-title math-color">🧮 数学乐园</div>
+    <div class="module-grid">
+      <div class="module-card" onclick="startGame('math-arithmetic')">
+        <div class="mod-emoji">➕➖</div><div class="mod-name">加减法闯关</div>
+        <div class="mod-desc">100以内加减法</div><div class="mod-level" id="level-arithmetic">第1关</div>
+      </div>
+      <div class="module-card" onclick="startGame('math-multiplication')">
+        <div class="mod-emoji">✖️</div><div class="mod-name">乘法口诀</div>
+        <div class="mod-desc">2~9 乘法表</div><div class="mod-level">🎯 练习</div>
+      </div>
+      <div class="module-card" onclick="startGame('math-mixed')">
+        <div class="mod-emoji">🎲</div><div class="mod-name">混合运算</div>
+        <div class="mod-desc">加减乘大挑战</div><div class="mod-level" id="level-mixed">第1关</div>
+      </div>
+      <div class="module-card" onclick="startGame('math-word')">
+        <div class="mod-emoji">📝</div><div class="mod-name">应用题</div>
+        <div class="mod-desc">生活中的数学</div><div class="mod-level" id="level-word">第1关</div>
+      </div>
+    </div>
+    <button class="btn-big btn-menu" onclick="navigateTo('home')">🏠 返回首页</button>
+  </section>
+
+  <!-- Screen: English Menu -->
+  <section class="screen" id="screen-english-menu">
+    <div class="menu-title english-color">📖 英语乐园</div>
+    <div class="module-grid">
+      <div class="module-card" onclick="startGame('english-picture')">
+        <div class="mod-emoji">🖼️</div><div class="mod-name">看图识词</div>
+        <div class="mod-desc">emoji 学单词</div><div class="mod-level">动物·颜色·食物</div>
+      </div>
+      <div class="module-card" onclick="startGame('english-spelling')">
+        <div class="mod-emoji">🔤</div><div class="mod-name">拼写练习</div>
+        <div class="mod-desc">字母拼单词</div><div class="mod-level" id="level-spelling">第1关</div>
+      </div>
+      <div class="module-card" onclick="startGame('english-sentence')">
+        <div class="mod-emoji">📜</div><div class="mod-name">句子填空</div>
+        <div class="mod-desc">语法小达人</div><div class="mod-level" id="level-sentence">第1关</div>
+      </div>
+    </div>
+    <button class="btn-big btn-menu" onclick="navigateTo('home')">🏠 返回首页</button>
+  </section>
+
+  <!-- Screen: Game Play -->
+  <section class="screen" id="screen-game">
+    <div class="game-header"><span class="game-level" id="gameLevelLabel"></span></div>
+    <div class="question-area" id="questionArea">
+      <div class="question-emoji" id="questionEmoji"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="question-hint" id="questionHint"></div>
+    </div>
+    <div class="answer-grid" id="answerGrid"></div>
+    <div id="spellingArea"></div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div class="progress-text" id="progressText">0 / 0</div>
+    </div>
+  </section>
+
+  <!-- Screen: Results -->
+  <section class="screen" id="screen-results">
+    <div class="results-box">
+      <div class="results-emoji" id="resultEmoji"></div>
+      <div class="results-title" id="resultTitle"></div>
+      <div class="results-stars" id="resultStars"></div>
+      <div class="results-stats" id="resultStats"></div>
+      <button class="btn-big btn-retry" onclick="retryGame()">🔄 再来一局</button>
+      <button class="btn-big btn-menu" id="resultMenuBtn" onclick="backToMenu()">🏠 返回选关</button>
+    </div>
+  </section>
+
+  <!-- Screen: Achievements -->
+  <section class="screen" id="screen-achievements">
+    <div class="menu-title" style="color:#FFD93D;">🏆 我的成就</div>
+    <div class="achieve-grid" id="achieveGrid"></div>
+    <button class="btn-big btn-menu" onclick="navigateTo('home')" style="margin-top:20px;">🏠 返回首页</button>
+    <button class="btn-big" style="background:#ddd;color:#999;max-width:200px;font-size:0.9rem;margin-top:8px;" onclick="resetProgress()">重置进度</button>
+  </section>
+
+  <!-- Multiplication Table Select -->
+  <section class="screen" id="screen-mult-select">
+    <div class="menu-title math-color">✖️ 选择乘法表</div>
+    <div class="module-grid" id="tableGrid"></div>
+    <button class="btn-big btn-menu" onclick="navigateTo('math-menu')">🏠 返回</button>
+  </section>
+
+  <!-- Picture Word Set Select -->
+  <section class="screen" id="screen-picword-select">
+    <div class="menu-title english-color">🖼️ 选择单词主题</div>
+    <div class="module-grid" id="picwordSets"></div>
+    <button class="btn-big btn-menu" onclick="navigateTo('english-menu')">🏠 返回</button>
+  </section>
+
+  <!-- Feedback Overlay -->
+  <div id="feedback-overlay"></div>
+</div>
+
+<script>
+// ==================== AUDIO ENGINE ====================
+const AudioEngine = {
+  ctx: null,
+  _ensure() {
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  _tone(freq, dur, type='sine', vol=0.3) {
+    try { this._ensure(); } catch(e) { return; }
+    const o = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    g.gain.setValueAtTime(vol, this.ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + dur);
+    o.connect(g); g.connect(this.ctx.destination);
+    o.start(); o.stop(this.ctx.currentTime + dur);
+  },
+  correct() { this._tone(523, 0.12); setTimeout(() => this._tone(659, 0.18), 80); },
+  wrong() { this._tone(400, 0.2, 'triangle', 0.2); setTimeout(() => this._tone(330, 0.25, 'triangle', 0.2), 120); },
+  combo(lv) { for(let i=0;i<Math.min(lv,5);i++) setTimeout(()=>this._tone(500+i*80,0.08,'sine',0.25),i*70); },
+  levelUp() { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this._tone(f,0.15,'sine',0.3),i*120)); },
+  click() { this._tone(800, 0.04, 'square', 0.08); },
+  achievement() { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this._tone(f,0.18,'sine',0.3),i*100)); }
+};
+
+// ==================== DATA & STATE ====================
+const DEFAULT_STATE = {
+  totalStars: 0, highestCombo: 0, achievementsUnlocked: [],
+  math: {
+    arithmetic: { level:1, stars:0, highScore:0, answered:0, correct:0 },
+    multiplication: { tables:{} },
+    mixed: { level:1, stars:0, highScore:0 },
+    word: { level:1, stars:0, highScore:0 }
+  },
+  english: {
+    pictureWords: { completedSets:[] },
+    spelling: { level:1, stars:0, highScore:0 },
+    sentence: { level:1, stars:0, highScore:0 }
+  }
+};
+for(let t=2;t<=9;t++) DEFAULT_STATE.math.multiplication.tables[t]=0;
+
+let gameState = loadState();
+let gameSession = null;
+let screenHistory = ['home'];
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('kidLearningGame');
+    if (!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    const parsed = JSON.parse(raw);
+    return deepMerge(JSON.parse(JSON.stringify(DEFAULT_STATE)), parsed);
+  } catch(e) { return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+}
+function saveState() { try { localStorage.setItem('kidLearningGame', JSON.stringify(gameState)); } catch(e) {} }
+function deepMerge(base, over) {
+  for(const k in over) {
+    if(over[k] && typeof over[k]==='object' && !Array.isArray(over[k])) deepMerge(base[k], over[k]);
+    else base[k] = over[k];
+  }
+  return base;
+}
+function resetProgress() {
+  if(confirm('确定要重置所有进度吗？所有星星和成绩都会被清除！')) {
+    gameState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    saveState(); updateTopBar(); navigateTo('home');
+  }
+}
+
+// ==================== NAVIGATION ====================
+function navigateTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + screenId);
+  if (target) { target.classList.add('active'); target.scrollTop = 0; }
+  if (screenId !== 'game' && screenId !== 'results') {
+    screenHistory = screenHistory.filter(s => s !== screenId);
+    screenHistory.push(screenId);
+    if (screenHistory.length > 10) screenHistory.shift();
+  }
+  updateTopBar();
+  if (['home','math-menu','english-menu','achievements'].includes(screenId)) {
+    document.getElementById('top-bar').style.display = 'flex';
+  }
+}
+function goBack() {
+  if (screenHistory.length > 1) {
+    screenHistory.pop();
+    navigateTo(screenHistory[screenHistory.length - 1]);
+  }
+}
+function updateTopBar() {
+  document.getElementById('starCount').textContent = gameState.totalStars;
+  document.getElementById('btnBack').style.display = (screenHistory.length > 1) ? '' : 'none';
+  document.getElementById('comboDisplay').textContent = '';
+  document.getElementById('comboDisplay').classList.remove('active');
+}
+
+// ==================== UTILITIES ====================
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=randInt(0,i);[a[i],a[j]]=[a[j],a[i]];} return a; }
+function genDistractors(answer, count, opts={}) {
+  const {min=0, max=100}=opts; const d=new Set(); d.add(answer);
+  while(d.size < count+1) {
+    let v = answer + randInt(-12, 12); v = Math.max(min, Math.min(max, v));
+    if (v !== answer) d.add(v);
+  }
+  return [...d].filter(v=>v!==answer).slice(0, count);
+}
+
+// ==================== QUESTION GENERATORS ====================
+const QuestionGenerators = {
+  // --- MATH ---
+  'math-arithmetic': function(level) {
+    let maxNum; const lv = level || 1;
+    if(lv<=3) maxNum=20+(lv-1)*10; else if(lv<=6) maxNum=50+(lv-4)*15; else maxNum=100;
+    const isAdd = Math.random()>0.5;
+    let a,b,answer;
+    if(isAdd){a=randInt(1,maxNum-1); b=randInt(1,maxNum-a); answer=a+b;}
+    else{a=randInt(5,maxNum); b=randInt(1,a); answer=a-b;}
+    const choices = shuffle([answer, ...genDistractors(answer, 3, {max:maxNum})]);
+    return {display:`${a} ${isAdd?'+':'-'} ${b} = ?`, correctAnswer:answer, choices};
+  },
+
+  'math-multiplication': function(config) {
+    const tables=config.tables||[2,3,4,5];
+    const t=randChoice(tables); const m=randInt(1,9); const answer=t*m;
+    const choices=shuffle([answer,...genDistractors(answer,3,{min:1,max:81})]);
+    return {display:`${t} × ${m} = ?`, correctAnswer:answer, choices, table:t, multiplier:m};
+  },
+
+  'math-mixed': function(level) {
+    const lv=level||1; const max=10+lv*12;
+    const a=randInt(1,max/2); const op1=randChoice(['+','-','×']);
+    let b=randInt(1,Math.min(op1==='×'?9:max/2, max/3));
+    const op2=randChoice(['+','-']);
+    let mid; if(op1==='+')mid=a+b; else if(op1==='-')mid=a-b; else mid=a*b;
+    const c=randInt(1,Math.max(1,max-Math.abs(mid)));
+    const answer=op2==='+'?mid+c:mid-c; const displayOp1=op1==='×'?'×':op1;
+    const choices=shuffle([answer,...genDistractors(answer,3,{min:0,max:200})]);
+    return {display:`${a} ${displayOp1} ${b} ${op2} ${c} = ?`, correctAnswer:answer, choices};
+  },
+
+  'math-word': function(level) {
+    const lv=level||1; const max=5+lv*3;
+    const nouns=['苹果','铅笔','气球','书本','饼干','贴纸','花朵','糖果','星星','贝壳'];
+    const tpl=randChoice(['add','sub','mul']);
+    let a,b,answer,text,noun=randChoice(nouns);
+    if(tpl==='add'){a=randInt(1,max);b=randInt(1,max);answer=a+b;
+      text=`小明有 ${a} 个${noun}，妈妈又给了他 ${b} 个。小明现在一共有多少个${noun}？`;}
+    else if(tpl==='sub'){a=randInt(5,max+5);b=randInt(1,a);answer=a-b;
+      text=`书架上有 ${a} 本${noun}，借走了 ${b} 本。还剩多少本？`;}
+    else{a=randInt(2,Math.min(9,max));b=randInt(2,9);answer=a*b;
+      text=`每组有 ${a} 个${noun}，共有 ${b} 组。总共有多少个${noun}？`;}
+    const choices=shuffle([answer,...genDistractors(answer,3,{min:0,max:Math.max(answer+20,50)})]);
+    return {display:text, correctAnswer:answer, choices};
+  },
+
+  // --- ENGLISH ---
+  'english-picture': function(config) {
+    const set=config.set||'animals';
+    const vocab=VOCABULARY_SETS[set]; const item=randChoice(vocab);
+    const choices=shuffle([item.word, ...randChoice(item.distractors.slice(0,6)).split(',').filter(w=>w&&w!==item.word).slice(0,3)]);
+    while(choices.length<4){const r=randChoice(vocab);if(!choices.includes(r.word))choices.push(r.word);}
+    return {display:item.emoji, correctAnswer:item.word, choices:shuffle(choices.slice(0,4)), emoji:true, word:item.word};
+  },
+
+  'english-spelling': function(level) {
+    const lv=level||1;
+    const pool=SPELLING_WORDS.filter((_,i)=>Math.floor(i/5)===(lv-1));
+    if(pool.length===0) return QuestionGenerators['english-spelling'](Math.min(lv-1,5));
+    const item=randChoice(pool);
+    const letters=item.word.split('');
+    const extras='abcdefghijklmnopqrstuvwxyz'.split('').filter(c=>!letters.includes(c));
+    const extraLetters=shuffle(extras).slice(0,Math.max(0,8-letters.length));
+    return {display:item.hint, correctAnswer:item.word, letterChoices:shuffle([...letters,...extraLetters]), emoji:true};
+  },
+
+  'english-sentence': function(level) {
+    const lv=level||1;
+    const pool=SENTENCE_TEMPLATES.filter(t=>t.level<=lv);
+    const tpl=randChoice(pool);
+    return {display:tpl.sentence.replace('___','________'), correctAnswer:tpl.answer,
+      choices:shuffle([tpl.answer, ...tpl.choices.filter(c=>c!==tpl.answer)])};
+  }
+};
+
+// ==================== VOCABULARY DATA ====================
+const VOCABULARY_SETS = {
+  animals: [
+    {word:'cat',emoji:'🐱',distractors:['hat','bat','cut','cap','cot','can']},
+    {word:'dog',emoji:'🐶',distractors:['fog','dig','dot','dug','log','bog']},
+    {word:'fish',emoji:'🐟',distractors:['dish','wish','fist','fins','dash','flash']},
+    {word:'bird',emoji:'🐦',distractors:['bid','bind','bear','bide','bard','burl']},
+    {word:'rabbit',emoji:'🐰',distractors:['habit','rabid','rapid','ribbit','rabbet','rubbit']},
+    {word:'bear',emoji:'🐻',distractors:['beer','bare','bean','beat','beam','beak']},
+    {word:'frog',emoji:'🐸',distractors:['fog','from','fork','flog','frag','frop']},
+    {word:'duck',emoji:'🦆',distractors:['luck','dock','dusk','duke','deck','ducky']}
+  ],
+  colors: [
+    {word:'red',emoji:'🔴',distractors:['bed','rid','read','rod','rad','reed']},
+    {word:'blue',emoji:'🔵',distractors:['blow','blew','glue','blur','blub','blade']},
+    {word:'green',emoji:'🟢',distractors:['grain','greet','greed','grin','grin','groan']},
+    {word:'yellow',emoji:'🟡',distractors:['fellow','yell','follow','yelp','yell','yolk']},
+    {word:'pink',emoji:'🟣',distractors:['pin','pick','pink','pinko','pine','pith']},
+    {word:'white',emoji:'⬜',distractors:['write','wait','whit','whine','whale','while']}
+  ],
+  food: [
+    {word:'apple',emoji:'🍎',distractors:['apply','ample','ape','app','april','appal']},
+    {word:'bread',emoji:'🍞',distractors:['breed','break','breath','bred','brad','braid']},
+    {word:'egg',emoji:'🥚',distractors:['age','edge','add','ego','peg','beg']},
+    {word:'milk',emoji:'🥛',distractors:['mild','silk','mile','mink','milt','mill']},
+    {word:'rice',emoji:'🍚',distractors:['rise','race','ripe','rick','rich','ride']},
+    {word:'cake',emoji:'🎂',distractors:['take','make','lake','bake','fake','wake']}
+  ],
+  body: [
+    {word:'eye',emoji:'👁',distractors:['ear','age','ice','eve','ape','eel']},
+    {word:'hand',emoji:'✋',distractors:['band','land','sand','handy','hang','hand']},
+    {word:'nose',emoji:'👃',distractors:['note','rose','pose','noise','nosey','noes']},
+    {word:'mouth',emoji:'👄',distractors:['month','south','mouse','moth','mount','moat']},
+    {word:'foot',emoji:'🦶',distractors:['food','boot','root','footy','fool','fog']}
+  ],
+  school: [
+    {word:'book',emoji:'📖',distractors:['cook','look','hook','took','rook','nook']},
+    {word:'pen',emoji:'🖊',distractors:['ten','hen','pin','pan','pun','pet']},
+    {word:'bag',emoji:'🎒',distractors:['big','bug','beg','bog','bat','bad']},
+    {word:'ruler',emoji:'📏',distractors:['rule','roller','rural','ruler','riled','ruled']},
+    {word:'desk',emoji:'🪑',distractors:['disk','dusk','deck','desk','dask','dick']}
+  ]
+};
+
+const SPELLING_WORDS = [
+  {word:'cat',hint:'🐱 一种会喵喵叫的小动物'},{word:'dog',hint:'🐶 人类最好的朋友'},
+  {word:'sun',hint:'☀️ 天空中发光发热的星球'},{word:'hat',hint:'🎩 戴在头上的东西'},
+  {word:'red',hint:'🔴 苹果的颜色'},{word:'big',hint:'🐘 小的反义词'},
+  {word:'run',hint:'🏃 快速地移动'},{word:'cup',hint:'☕ 用来喝水的东西'},
+  {word:'pen',hint:'🖊 用来写字的东西'},{word:'hot',hint:'🔥 温度很高'},
+  {word:'book',hint:'📖 用来看的东西，有很多页'},{word:'tree',hint:'🌳 有叶子和树干'},
+  {word:'fish',hint:'🐟 在水里游的动物'},{word:'cake',hint:'🎂 生日时吃的甜点'},
+  {word:'star',hint:'⭐ 夜空中闪烁的'},{word:'milk',hint:'🥛 白色的饮料'},
+  {word:'desk',hint:'🪑 在学校用来写字的地方'},{word:'frog',hint:'🐸 绿色的，会跳'},
+  {word:'hand',hint:'✋ 用来拿东西的身体部位'},{word:'door',hint:'🚪 进出房间要打开它'},
+  {word:'apple',hint:'🍎 红色或绿色的水果'},{word:'rabbit',hint:'🐰 长耳朵，会跳'},
+  {word:'pencil',hint:'✏️ 写字用的工具'},{word:'yellow',hint:'🟡 太阳的颜色'},
+  {word:'school',hint:'🏫 学习的地方'},{word:'window',hint:'🪟 可以透过它看到外面'},
+  {word:'garden',hint:'🌻 种花的地方'},{word:'family',hint:'👨‍👩‍👧 和你住在一起的人'},
+  {word:'monkey',hint:'🐵 喜欢爬树和吃香蕉'},{word:'bridge',hint:'🌉 横跨河流的建筑'}
+];
+
+const SENTENCE_TEMPLATES = [
+  {sentence:'I ___ a student.',answer:'am',choices:['am','is','are','be'],level:1},
+  {sentence:'She ___ a red bag.',answer:'has',choices:['have','has','had','is'],level:1},
+  {sentence:'The cat is ___ the table.',answer:'under',choices:['on','at','under','to'],level:1},
+  {sentence:'He ___ playing football.',answer:'is',choices:['is','am','are','be'],level:1},
+  {sentence:'There ___ three apples.',answer:'are',choices:['is','am','are','be'],level:2},
+  {sentence:'I like ___ basketball.',answer:'playing',choices:['play','plays','playing','played'],level:2},
+  {sentence:'We go to school ___ bus.',answer:'by',choices:['by','on','with','in'],level:2},
+  {sentence:'She ___ two brothers.',answer:'has',choices:['have','has','had','is'],level:2},
+  {sentence:'They ___ happy today.',answer:'are',choices:['is','am','are','be'],level:2},
+  {sentence:'My mother ___ cooking now.',answer:'is',choices:['is','are','am','be'],level:3},
+  {sentence:'The birds ___ flying in the sky.',answer:'are',choices:['is','am','are','be'],level:3},
+  {sentence:'Tom and Jerry ___ good friends.',answer:'are',choices:['is','am','are','be'],level:3},
+  {sentence:'There ___ a book on the desk.',answer:'is',choices:['is','am','are','be'],level:3}
+];
+
+// ==================== GAME ENGINE ====================
+class GameSession {
+  constructor(moduleId, config) {
+    this.moduleId = moduleId;
+    this.config = config;
+    this.questions = [];
+    this.currentIdx = 0;
+    this.correctCount = 0;
+    this.wrongCount = 0;
+    this.combo = 0;
+    this.highestCombo = 0;
+    this.starsEarned = 0;
+    this.questionStars = [];
+    this.startTime = Date.now();
+    this.level = config.level || 1;
+    this.answered = false;
+  }
+
+  start() {
+    const count = this.config.questionsPerRound || 10;
+    for (let i = 0; i < count; i++) {
+      this.questions.push(QuestionGenerators[this.moduleId](this.config));
+    }
+    this.currentIdx = 0;
+    this.renderQuestion();
+  }
+
+  renderQuestion() {
+    const q = this.getCurrentQuestion();
+    if (!q) return;
+    this.answered = false;
+    document.getElementById('questionText').textContent = q.emoji ? '' : q.display;
+    document.getElementById('questionText').style.display = q.emoji ? 'none' : '';
+    document.getElementById('questionEmoji').textContent = q.emoji ? q.display : '';
+    document.getElementById('questionEmoji').style.display = q.emoji ? '' : 'none';
+    document.getElementById('questionHint').textContent = q.emoji && q.hint ? q.hint : '';
+
+    const area = document.getElementById('questionArea'); area.classList.remove('shake');
+    const grid = document.getElementById('answerGrid');
+    const spArea = document.getElementById('spellingArea'); spArea.innerHTML = '';
+    grid.innerHTML = '';
+
+    // Spelling mode
+    if (this.moduleId === 'english-spelling') {
+      this._renderSpelling(q);
+      return;
+    }
+
+    grid.style.display = 'grid';
+    q.choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn'; btn.textContent = c;
+      btn.addEventListener('click', () => this.submitAnswer(c));
+      grid.appendChild(btn);
+    });
+    this._updateProgress();
+  }
+
+  _renderSpelling(q) {
+    const spArea = document.getElementById('spellingArea');
+    const grid = document.getElementById('answerGrid'); grid.style.display = 'none';
+    const lv = this.level;
+
+    // Letter tiles for level 1-2, typing for 3-5
+    if (lv <= 2) {
+      this._spellSlots = [];
+      this._spellAnswer = q.correctAnswer;
+      const tilesHTML = '<div class="letter-tiles" id="letterTiles"></div>';
+      const slotsHTML = '<div class="answer-slots" id="answerSlots"></div>';
+      spArea.innerHTML = tilesHTML + slotsHTML;
+
+      const tilesDiv = document.getElementById('letterTiles');
+      q.letterChoices.forEach(l => {
+        const tile = document.createElement('span');
+        tile.className = 'letter-tile'; tile.textContent = l;
+        tile.addEventListener('click', () => {
+          if (this._spellSlots.length >= this._spellAnswer.length) return;
+          this._spellSlots.push(l);
+          tile.classList.add('used');
+          this._updateSpellSlots();
+        });
+        tilesDiv.appendChild(tile);
+      });
+
+      const slotsDiv = document.getElementById('answerSlots');
+      for (let i = 0; i < q.correctAnswer.length; i++) {
+        const slot = document.createElement('span');
+        slot.className = 'answer-slot'; slot.textContent = '';
+        slot.addEventListener('click', () => {
+          if (i < this._spellSlots.length) {
+            this._spellSlots.splice(i, 1);
+            // Re-enable tile
+            const tiles = document.querySelectorAll('#letterTiles .letter-tile.used');
+            if (tiles.length >= this._spellSlots.length + 1) {
+              // Find the removed letter's tile
+              const allTiles = document.querySelectorAll('#letterTiles .letter-tile');
+              const usedLetters = [...this._spellSlots];
+              allTiles.forEach(t => {
+                if (t.classList.contains('used')) {
+                  const idx = usedLetters.indexOf(t.textContent);
+                  if (idx === -1) { t.classList.remove('used'); usedLetters.push('_found_'); }
+                  else { usedLetters.splice(idx, 1); }
+                }
+              });
+            }
+            this._updateSpellSlots();
+          }
+        });
+        slotsDiv.appendChild(slot);
+      }
+
+      const checkBtn = document.createElement('button');
+      checkBtn.className = 'btn-big btn-retry'; checkBtn.textContent = '✅ 提交答案';
+      checkBtn.style.marginTop = '12px';
+      checkBtn.addEventListener('click', () => {
+        if (this._spellSlots.length !== this._spellAnswer.length) {
+          this._showToast('请填满所有字母哦！');
+          return;
+        }
+        this.submitAnswer(this._spellSlots.join(''));
+      });
+      spArea.appendChild(checkBtn);
+    } else {
+      spArea.innerHTML = `<div class="spelling-input-area">
+        <input type="text" id="spellInput" placeholder="在这里输入单词" autocomplete="off" autocapitalize="off">
+        <button class="btn-big btn-retry" style="margin-top:8px;" onclick="document.getElementById('spellInput').dispatchEvent(new Event('submitSpell'))">✅ 提交</button>
+      </div>`;
+      const input = document.getElementById('spellInput');
+      input.addEventListener('submitSpell', () => this.submitAnswer(input.value.trim().toLowerCase()));
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.submitAnswer(input.value.trim().toLowerCase()); });
+      setTimeout(() => input.focus(), 100);
+    }
+    this._updateProgress();
+  }
+
+  _updateSpellSlots() {
+    const slots = document.querySelectorAll('#answerSlots .answer-slot');
+    slots.forEach((s, i) => {
+      s.textContent = this._spellSlots[i] || '';
+      if (this._spellSlots[i]) s.classList.add('filled'); else s.classList.remove('filled');
+    });
+  }
+
+  getCurrentQuestion() { return this.questions[this.currentIdx]; }
+
+  submitAnswer(answer) {
+    if (this.answered) return;
+    this.answered = true;
+    const q = this.getCurrentQuestion();
+    const isCorrect = String(answer).toLowerCase().trim() === String(q.correctAnswer).toLowerCase().trim();
+
+    // Highlight buttons for MCQ mode
+    const buttons = document.querySelectorAll('#answerGrid .answer-btn');
+    buttons.forEach(b => {
+      b.disabled = true;
+      if (String(b.textContent).toLowerCase().trim() === String(q.correctAnswer).toLowerCase().trim()) b.classList.add('correct');
+      if (String(b.textContent).toLowerCase().trim() === String(answer).toLowerCase().trim() && !isCorrect) b.classList.add('wrong');
+    });
+
+    if (isCorrect) {
+      this.correctCount++; this.combo++;
+      if (this.combo > this.highestCombo) this.highestCombo = this.combo;
+      let qStars = 1; if (this.combo >= 7) qStars = 3; else if (this.combo >= 3) qStars = 2;
+      this.starsEarned += qStars; this.questionStars.push(qStars);
+      AudioEngine.correct();
+      if (this.combo === 5) AudioEngine.combo(5);
+      if (this.combo === 10) AudioEngine.combo(10);
+      this._spawnParticles('⭐', qStars * 4);
+      this._showToast(`${'⭐'.repeat(qStars)} 太棒了！`);
+    } else {
+      this.wrongCount++; this.combo = 0;
+      AudioEngine.wrong();
+      document.getElementById('questionArea').classList.add('shake');
+      this._showToast(`正确答案是: ${q.correctAnswer}`);
+    }
+
+    this._updateCombo();
+    const delay = isCorrect ? 1000 : 2000;
+    setTimeout(() => this.nextQuestion(), delay);
+  }
+
+  nextQuestion() {
+    this.currentIdx++;
+    if (this.currentIdx >= this.questions.length) { this.endSession(); return; }
+    this.renderQuestion();
+  }
+
+  endSession() {
+    const acc = this.correctCount / this.questions.length;
+    let bonusStars = 0;
+    if (acc >= 0.95) bonusStars = 5;
+    else if (acc >= 0.80) bonusStars = 3;
+    else if (acc >= 0.60) bonusStars = 1;
+    this.starsEarned += bonusStars;
+
+    // Update state
+    gameState.totalStars += this.starsEarned;
+    if (this.highestCombo > gameState.highestCombo) gameState.highestCombo = this.highestCombo;
+    this._updateModuleState(acc);
+    checkAchievements();
+    saveState();
+
+    // Show results
+    this._renderResults(bonusStars, acc);
+  }
+
+  _updateModuleState(acc) {
+    const ms = gameState.math, es = gameState.english;
+    switch (this.moduleId) {
+      case 'math-arithmetic':
+        ms.arithmetic.answered += this.questions.length;
+        ms.arithmetic.correct += this.correctCount;
+        ms.arithmetic.stars = Math.max(ms.arithmetic.stars, gameState.totalStars);
+        if (ms.arithmetic.highScore < this.starsEarned) ms.arithmetic.highScore = this.starsEarned;
+        if (acc >= 0.6 && ms.arithmetic.level < 10 && ms.arithmetic.level === this.level) ms.arithmetic.level++;
+        break;
+      case 'math-multiplication':
+        // Track per-table mastery
+        this.questions.forEach(q => {
+          if (q.table) {
+            const t = ms.multiplication.tables[q.table] || 0;
+            ms.multiplication.tables[q.table] = Math.min(t + (1/5), 2);
+          }
+        });
+        break;
+      case 'math-mixed':
+        if (ms.mixed.highScore < this.starsEarned) ms.mixed.highScore = this.starsEarned;
+        if (acc >= 0.6 && ms.mixed.level < 5 && ms.mixed.level === this.level) ms.mixed.level++;
+        break;
+      case 'math-word':
+        if (ms.word.highScore < this.starsEarned) ms.word.highScore = this.starsEarned;
+        if (acc >= 0.5 && ms.word.level < 5 && ms.word.level === this.level) ms.word.level++;
+        break;
+      case 'english-picture':
+        if (acc >= 0.6) {
+          const s = this.config.set;
+          if (s && !es.pictureWords.completedSets.includes(s)) es.pictureWords.completedSets.push(s);
+        }
+        break;
+      case 'english-spelling':
+        if (es.spelling.highScore < this.starsEarned) es.spelling.highScore = this.starsEarned;
+        if (acc >= 0.6 && es.spelling.level < 5 && es.spelling.level === this.level) es.spelling.level++;
+        break;
+      case 'english-sentence':
+        if (es.sentence.highScore < this.starsEarned) es.sentence.highScore = this.starsEarned;
+        if (acc >= 0.6 && es.sentence.level < 3 && es.sentence.level === this.level) es.sentence.level++;
+        break;
+    }
+    saveState();
+  }
+
+  _renderResults(bonus, acc) {
+    const elapsed = Math.round((Date.now() - this.startTime) / 1000);
+    const min = Math.floor(elapsed / 60); const sec = elapsed % 60;
+    const emojis = [['😢','🥺','🙂','😊','🤩','🏆'][Math.min(Math.floor(acc*5), 5)]];
+    const titles = ['继续加油！','还不错！','做得很好！','太棒了！','完美！'][Math.min(Math.floor(acc*4), 4)];
+
+    document.getElementById('resultEmoji').textContent = acc>=0.9?'🎉':acc>=0.7?'😊':acc>=0.5?'🙂':'💪';
+    document.getElementById('resultTitle').textContent = titles;
+    document.getElementById('resultStars').textContent = '⭐'.repeat(Math.min(this.starsEarned, 20)) + ` (${this.starsEarned}颗)`;
+    document.getElementById('resultStats').innerHTML = `
+      <div>📊 正确率: ${this.correctCount}/${this.questions.length} (${Math.round(acc*100)}%)</div>
+      <div>⏱ 用时: ${min}分${sec}秒</div>
+      <div>🔥 最高连击: ${this.highestCombo}</div>
+      <div>⭐ 本局获得: ${this.starsEarned}颗 (含${bonus}颗奖励)</div>
+    `;
+    document.getElementById('resultMenuBtn').onclick = () => this._backToMenu();
+    navigateTo('results');
+    if (acc >= 0.8) this._spawnParticles('🎉', 20);
+    this._showToast(titles);
+  }
+
+  _backToMenu() {
+    if (this.moduleId.startsWith('math')) navigateTo('math-menu');
+    else navigateTo('english-menu');
+  }
+
+  _updateProgress() {
+    document.getElementById('progressFill').style.width = (this.currentIdx / this.questions.length * 100) + '%';
+    document.getElementById('progressText').textContent = `${this.currentIdx} / ${this.questions.length}`;
+  }
+
+  _updateCombo() {
+    const cd = document.getElementById('comboDisplay');
+    if (this.combo >= 3) {
+      cd.textContent = '🔥 x' + this.combo; cd.classList.add('active');
+    } else {
+      cd.textContent = this.combo > 0 ? 'x' + this.combo : ''; cd.classList.remove('active');
+    }
+  }
+
+  _showToast(msg) {
+    const ov = document.getElementById('feedback-overlay');
+    const t = document.createElement('div'); t.className = 'feedback-toast'; t.textContent = msg;
+    ov.appendChild(t);
+    setTimeout(() => t.remove(), 1300);
+  }
+
+  _spawnParticles(emoji, count) {
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div'); p.className = 'particle'; p.textContent = emoji;
+      p.style.left = (20 + Math.random() * 60) + '%';
+      p.style.top = (30 + Math.random() * 30) + '%';
+      p.style.animationDuration = (0.6 + Math.random() * 0.8) + 's';
+      p.style.animationDelay = (Math.random() * 0.3) + 's';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1500);
+    }
+  }
+}
+
+// ==================== ACHIEVEMENTS ====================
+const ACHIEVEMENTS = [
+  {id:'first_star',name:'第一颗星',icon:'⭐',cond:s=>s.totalStars>=1},
+  {id:'star_10',name:'十星小能手',icon:'🌟',cond:s=>s.totalStars>=10},
+  {id:'star_50',name:'五十星达人',icon:'💫',cond:s=>s.totalStars>=50},
+  {id:'star_100',name:'百星王者',icon:'👑',cond:s=>s.totalStars>=100},
+  {id:'combo_5',name:'五连击',icon:'🔥',cond:s=>s.highestCombo>=5},
+  {id:'combo_10',name:'十连击王',icon:'💥',cond:s=>s.highestCombo>=10},
+  {id:'math_level5',name:'数学闯将',icon:'🏅',cond:s=>s.math.arithmetic.level>=5},
+  {id:'math_master',name:'数学大师',icon:'🏆',cond:s=>s.math.arithmetic.level>=10},
+  {id:'spell_master',name:'拼写达人',icon:'📝',cond:s=>s.english.spelling.level>=4},
+  {id:'vocab_master',name:'单词大王',icon:'📚',cond:s=>s.english.pictureWords.completedSets.length>=3}
+];
+
+function checkAchievements() {
+  let newAch = false;
+  ACHIEVEMENTS.forEach(a => {
+    if (!gameState.achievementsUnlocked.includes(a.id) && a.cond(gameState)) {
+      gameState.achievementsUnlocked.push(a.id);
+      newAch = true;
+      setTimeout(() => {
+        AudioEngine.achievement();
+        const ov = document.getElementById('feedback-overlay');
+        const t = document.createElement('div'); t.className = 'feedback-toast';
+        t.textContent = a.icon + ' 解锁成就: ' + a.name;
+        t.style.animationDuration = '2s'; t.style.fontSize = '1.2rem';
+        ov.appendChild(t); setTimeout(() => t.remove(), 2200);
+      }, 500);
+    }
+  });
+  if (newAch) saveState();
+}
+
+function renderAchievements() {
+  const grid = document.getElementById('achieveGrid');
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const unlocked = gameState.achievementsUnlocked.includes(a.id);
+    return `<div class="achieve-card ${unlocked?'':'locked'}">
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-name">${a.name}</div>
+      <div style="font-size:0.75rem;color:var(--text-light)">${unlocked?'已解锁':'未解锁'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== GAME START & FLOW ====================
+function startGame(moduleId) {
+  document.getElementById('top-bar').style.display = 'flex';
+  document.getElementById('comboDisplay').textContent = '';
+  document.getElementById('comboDisplay').classList.remove('active');
+  screenHistory = screenHistory.filter(s => s !== 'game');
+  screenHistory.push('game');
+
+  // Special: multiplication table select
+  if (moduleId === 'math-multiplication') {
+    const grid = document.getElementById('tableGrid');
+    const tables = gameState.math.multiplication.tables;
+    grid.innerHTML = [2,3,4,5,6,7,8,9].map(t => {
+      const mastery = tables[t] || 0;
+      const icon = mastery >= 2 ? '✅' : mastery >= 0.5 ? '🔄' : '📖';
+      return `<div class="module-card" onclick="startMultGame(${t})">
+        <div class="mod-emoji">${icon}</div><div class="mod-name">${t} 的乘法表</div>
+        <div class="mod-desc">${t}×1 到 ${t}×9</div>
+      </div>`;
+    }).join('');
+    // Challenge mode
+    grid.innerHTML += `<div class="module-card" onclick="startMultGame(0)" style="border:3px solid var(--math);">
+      <div class="mod-emoji">⚡</div><div class="mod-name">混合挑战</div>
+      <div class="mod-desc">全部乘法表随机</div>
+    </div>`;
+    navigateTo('mult-select');
+    return;
+  }
+
+  // Special: picture word set select
+  if (moduleId === 'english-picture') {
+    const grid = document.getElementById('picwordSets');
+    const completed = gameState.english.pictureWords.completedSets;
+    grid.innerHTML = Object.keys(VOCABULARY_SETS).map(set => {
+      const done = completed.includes(set);
+      const names = {animals:'🐱 动物',colors:'🌈 颜色',food:'🍔 食物',body:'🦵 身体部位',school:'🏫 学校用品'};
+      return `<div class="module-card ${done?'':'locked'}" onclick="startPicGame('${set}')" style="${done?'':'opacity:1;pointer-events:auto;'}">
+        <div class="mod-emoji">${done?'✅':'📖'}</div><div class="mod-name">${names[set]||set}</div>
+        <div class="mod-desc">${VOCABULARY_SETS[set].length} 个单词</div>
+      </div>`;
+    }).join('');
+    navigateTo('picword-select');
+    return;
+  }
+
+  // Get level from state
+  let level = 1;
+  const ms=gameState.math, es=gameState.english;
+  switch(moduleId) { case 'math-arithmetic':level=ms.arithmetic.level;break;case 'math-mixed':level=ms.mixed.level;break;case 'math-word':level=ms.word.level;break;case 'english-spelling':level=es.spelling.level;break;case 'english-sentence':level=es.sentence.level;break; }
+
+  document.getElementById('gameLevelLabel').textContent = `第${level}关`;
+  document.getElementById('spellingArea').innerHTML = '';
+  document.getElementById('answerGrid').innerHTML = '';
+
+  const config = {level, questionsPerRound:10};
+  gameSession = new GameSession(moduleId, config);
+  navigateTo('game');
+  gameSession.start();
+}
+
+function startMultGame(table) {
+  document.getElementById('top-bar').style.display = 'flex';
+  document.getElementById('comboDisplay').textContent = '';
+  screenHistory.push('game');
+  const tables = table === 0 ? [2,3,4,5,6,7,8,9] : [table];
+  document.getElementById('gameLevelLabel').textContent = table===0?'混合挑战':`${table}的乘法表`;
+  document.getElementById('spellingArea').innerHTML = '';
+  document.getElementById('answerGrid').innerHTML = '';
+  gameSession = new GameSession('math-multiplication', {tables, questionsPerRound:12});
+  navigateTo('game');
+  gameSession.start();
+}
+
+function startPicGame(set) {
+  document.getElementById('top-bar').style.display = 'flex';
+  document.getElementById('comboDisplay').textContent = '';
+  screenHistory.push('game');
+  document.getElementById('gameLevelLabel').textContent = '看图识词';
+  document.getElementById('spellingArea').innerHTML = '';
+  document.getElementById('answerGrid').innerHTML = '';
+  gameSession = new GameSession('english-picture', {set, questionsPerRound:10});
+  navigateTo('game');
+  gameSession.start();
+}
+
+function retryGame() {
+  if (!gameSession) return;
+  const moduleId = gameSession.moduleId;
+  const config = {...gameSession.config};
+  gameSession = new GameSession(moduleId, config);
+  navigateTo('game');
+  gameSession.start();
+}
+
+function backToMenu() {
+  if (gameSession) {
+    if (gameSession.moduleId.startsWith('math')) navigateTo('math-menu');
+    else navigateTo('english-menu');
+  } else {
+    navigateTo('home');
+  }
+}
+
+// ==================== UPDATE LEVEL LABELS ====================
+function updateLevelLabels() {
+  const el = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+  el('level-arithmetic', `第${gameState.math.arithmetic.level}关`);
+  el('level-mixed', `第${gameState.math.mixed.level}关`);
+  el('level-word', `第${gameState.math.word.level}关`);
+  el('level-spelling', `第${gameState.english.spelling.level}关`);
+  el('level-sentence', `第${gameState.english.sentence.level}关`);
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  updateTopBar();
+  updateLevelLabels();
+  document.getElementById('btnBack').style.display = 'none';
+});
+
+// Update labels whenever we navigate
+const origNavigateTo = navigateTo;
+navigateTo = function(screenId) {
+  updateLevelLabels();
+  origNavigateTo(screenId);
+  if (screenId === 'achievements') renderAchievements();
+  if (screenId === 'homework-setup') _hwRestoreInputs();
+  if (screenId === 'homework-history') renderHomeworkHistory();
+  document.getElementById('top-bar').style.display =
+    ['home','math-menu','english-menu','achievements','mult-select','picword-select','homework-setup','homework-history','homework-done'].includes(screenId) ? 'flex' : 'none';
+};
+
+// ==================== HOMEWORK MODE ====================
+const SUBJECT_NAMES = { chinese: '语文', math: '数学', english: '英语' };
+const SUBJECT_EMOJIS = { chinese: '📖', math: '🧮', english: '🔤' };
+const WORK_SECONDS = 20 * 60;
+const BREAK_SECONDS = 3 * 60;
+
+function _todayKey() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+function loadHWState() {
+  try {
+    const raw = localStorage.getItem('hwState');
+    if (!raw) return { todayKey: _todayKey(), tasks: { chinese:'', math:'', english:'' }, sessions:[] };
+    return JSON.parse(raw);
+  } catch(e) { return { todayKey: _todayKey(), tasks: { chinese:'', math:'', english:'' }, sessions:[] }; }
+}
+function saveHWState(s) { try { localStorage.setItem('hwState', JSON.stringify(s)); } catch(e) {} }
+
+let hwData = loadHWState();
+let hwSession = null;
+let _hwInterval = null;
+
+if (hwData.todayKey !== _todayKey()) {
+  hwData.todayKey = _todayKey();
+  hwData.tasks = { chinese:'', math:'', english:'' };
+  saveHWState(hwData);
+}
+
+function _hwRestoreInputs() {
+  document.getElementById('hwTaskChinese').value = hwData.tasks.chinese || '';
+  document.getElementById('hwTaskMath').value = hwData.tasks.math || '';
+  document.getElementById('hwTaskEnglish').value = hwData.tasks.english || '';
+}
+function _hwSaveInputs() {
+  hwData.tasks.chinese = document.getElementById('hwTaskChinese').value.trim();
+  hwData.tasks.math = document.getElementById('hwTaskMath').value.trim();
+  hwData.tasks.english = document.getElementById('hwTaskEnglish').value.trim();
+  saveHWState(hwData);
+}
+
+function quickFillHomework() {
+  document.getElementById('hwTaskChinese').value = '朗读课文，完成生字书写';
+  document.getElementById('hwTaskMath').value = '完成口算练习一页';
+  document.getElementById('hwTaskEnglish').value = '朗读课文，默写单词5个';
+  _hwSaveInputs();
+}
+function clearHomeworkTasks() {
+  document.getElementById('hwTaskChinese').value = '';
+  document.getElementById('hwTaskMath').value = '';
+  document.getElementById('hwTaskEnglish').value = '';
+  _hwSaveInputs();
+}
+
+function startHomework() {
+  _hwSaveInputs();
+  const tasks = [
+    { subject:'chinese', desc:hwData.tasks.chinese || '语文作业' },
+    { subject:'math', desc:hwData.tasks.math || '数学作业' },
+    { subject:'english', desc:hwData.tasks.english || '英语作业' },
+  ];
+  hwSession = {
+    tasks, currentIdx:0, completed:[],
+    timerEndAt:null, timerRemaining:WORK_SECONDS,
+    isBreak:false, isRunning:false, startedAt:null, subjectStars:{}
+  };
+  _hwRenderActive();
+  navigateTo('homework-active');
+}
+
+function _hwUpdateTimer() {
+  const s = hwSession; if (!s) return;
+  let r = s.isRunning && s.timerEndAt ? Math.max(0,Math.round((s.timerEndAt-Date.now())/1000)) : s.timerRemaining;
+  const m=Math.floor(r/60), sec=r%60;
+  const el=document.getElementById('hwTimer'); el.textContent = `${m}:${String(sec).padStart(2,'0')}`;
+  el.classList.remove('warning','danger');
+  if(r<=60) el.classList.add('danger'); else if(r<=300) el.classList.add('warning');
+  const lb=document.getElementById('hwTimerLabel');
+  if(!s.isRunning && s.timerRemaining===WORK_SECONDS) lb.textContent='准备开始';
+  else if(!s.isRunning) lb.textContent='⏸ 已暂停';
+  else if(r<=60) lb.textContent='⏰ 时间快到了！';
+  else lb.textContent='✏️ 专注写作业中...';
+}
+
+function _hwRenderActive() {
+  const s = hwSession; if (!s) return;
+  const task = s.tasks[s.currentIdx];
+  document.querySelectorAll('#hwProgressRow .hw-progress-dot').forEach((dot,i) => {
+    dot.classList.remove('done','current');
+    if (s.completed.includes(i)) dot.classList.add('done');
+    else if (i===s.currentIdx) dot.classList.add('current');
+  });
+  document.getElementById('hwCurSubjectLabel').textContent = `第 ${s.currentIdx+1} / ${s.tasks.length} 项`;
+  document.getElementById('hwCurSubjectName').textContent = `${SUBJECT_EMOJIS[task.subject]} ${SUBJECT_NAMES[task.subject]}`;
+  document.getElementById('hwCurTaskDesc').textContent = task.desc;
+  _hwUpdateTimer();
+  const btnStart = document.getElementById('hwBtnStart'), btnDone = document.getElementById('hwBtnDone');
+  if (s.isRunning) {
+    btnStart.style.display = ''; btnStart.textContent = '⏸ 暂停';
+    btnStart.className = 'hw-btn pause'; btnDone.style.display = '';
+  } else if (s.timerRemaining < WORK_SECONDS || s.startedAt) {
+    btnStart.style.display = ''; btnStart.textContent = '▶ 继续计时';
+    btnStart.className = 'hw-btn start'; btnDone.style.display = '';
+  } else {
+    btnStart.style.display = ''; btnStart.textContent = '▶ 开始计时';
+    btnStart.className = 'hw-btn start'; btnDone.style.display = 'none';
+  }
+}
+
+function hwToggleTimer() {
+  const s=hwSession; if(!s) return;
+  if(s.isRunning){ _hwStopTimer(); _hwRenderActive(); return; }
+  if(!s.startedAt) s.startedAt=Date.now();
+  s.isRunning=true; s.timerEndAt=Date.now()+s.timerRemaining*1000;
+  _hwRenderActive();
+  if(_hwInterval) clearInterval(_hwInterval);
+  _hwInterval = setInterval(() => {
+    if(!hwSession||!hwSession.isRunning) return;
+    const r=Math.round((hwSession.timerEndAt-Date.now())/1000);
+    _hwUpdateTimer();
+    if(r<=0){ _hwStopTimer(); hwSession.timerRemaining=0; _hwRenderActive(); AudioEngine.wrong(); }
+  }, 200);
+}
+
+function _hwStopTimer() {
+  const s=hwSession; if(!s||!s.isRunning) return;
+  s.timerRemaining=Math.max(0,Math.round((s.timerEndAt-Date.now())/1000));
+  s.timerEndAt=null; s.isRunning=false;
+  if(_hwInterval){clearInterval(_hwInterval);_hwInterval=null;}
+}
+
+function hwCompleteSubject() {
+  const s=hwSession; if(!s) return;
+  _hwStopTimer();
+  const task=s.tasks[s.currentIdx];
+  const pct=s.timerRemaining/WORK_SECONDS;
+  let stars=1; if(pct>0.5) stars=3; else if(pct>0.2) stars=2;
+  s.subjectStars[task.subject]=stars;
+  s.completed.push(s.currentIdx);
+  gameState.totalStars+=stars;
+  AudioEngine.correct();
+  s.currentIdx++;
+  if(s.currentIdx>=s.tasks.length){ _hwFinish(); return; }
+  _hwStartBreak();
+}
+
+function _hwStartBreak() {
+  const s=hwSession; s.isBreak=true; s.timerRemaining=BREAK_SECONDS; s.isRunning=true; s.timerEndAt=Date.now()+BREAK_SECONDS*1000;
+  const nt=s.tasks[s.currentIdx];
+  document.getElementById('hwBreakHint').textContent=`下一项：${SUBJECT_EMOJIS[nt.subject]} ${SUBJECT_NAMES[nt.subject]} — ${nt.desc}`;
+  navigateTo('homework-break');
+  if(_hwInterval) clearInterval(_hwInterval);
+  _hwInterval=setInterval(()=>{
+    if(!hwSession||!hwSession.isBreak) return;
+    const r=Math.round((hwSession.timerEndAt-Date.now())/1000);
+    const m=Math.floor(Math.max(0,r)/60), sec=Math.max(0,r)%60;
+    document.getElementById('hwBreakTimer').textContent=`${m}:${String(sec).padStart(2,'0')}`;
+    if(r<=0) hwSkipBreak();
+  },200);
+}
+
+function hwSkipBreak() {
+  if(_hwInterval){clearInterval(_hwInterval);_hwInterval=null;}
+  const s=hwSession; if(!s) return;
+  s.isBreak=false; s.timerRemaining=WORK_SECONDS; s.timerEndAt=null; s.isRunning=false;
+  _hwRenderActive(); navigateTo('homework-active');
+}
+
+function _hwFinish() {
+  if(_hwInterval){clearInterval(_hwInterval);_hwInterval=null;}
+  const s=hwSession; if(!s) return;
+  const total=Object.values(s.subjectStars).reduce((a,b)=>a+b,0);
+  const allThree=s.completed.length>=3; const bonus=allThree?5:0;
+  const final=total+bonus; gameState.totalStars+=bonus;
+  const dur=Math.round((Date.now()-s.startedAt)/60000);
+  hwData.sessions.unshift({
+    date:_todayKey(), timestamp:Date.now(),
+    tasks:s.tasks.map((t,i)=>({...t,done:s.completed.includes(i),stars:s.subjectStars[t.subject]||0})),
+    totalStars:final, duration:dur
+  });
+  if(hwData.sessions.length>50) hwData.sessions.length=50;
+  saveHWState(hwData); saveState();
+  document.getElementById('hwDoneTitle').textContent=allThree?'🎉 太厉害了！':'作业完成！';
+  document.getElementById('hwDoneStars').textContent='⭐'.repeat(Math.min(final,15))+` (${final}颗)`;
+  document.getElementById('hwDoneStats').innerHTML=`
+    <div>📖 语文: ${'⭐'.repeat(s.subjectStars.chinese||0)}</div>
+    <div>🧮 数学: ${'⭐'.repeat(s.subjectStars.math||0)}</div>
+    <div>🔤 英语: ${'⭐'.repeat(s.subjectStars.english||0)}</div>
+    <div>⏱ 总用时: 约 <span>${dur}</span> 分钟</div>
+    ${allThree?`<div>🔥 全部完成奖励: <span>+${bonus}</span> 颗星</div>`:''}
+  `;
+  if(allThree) AudioEngine.levelUp(); else AudioEngine.correct();
+  hwSession=null; navigateTo('homework-done'); updateTopBar();
+}
+
+function hwQuitConfirm() {
+  if(hwSession&&hwSession.completed.length>0&&hwSession.completed.length<hwSession.tasks.length){
+    if(!confirm('还有作业没完成哦，确定要退出吗？')) return;
+  }
+  if(_hwInterval){clearInterval(_hwInterval);_hwInterval=null;}
+  hwSession=null; navigateTo('home');
+}
+
+function renderHomeworkHistory() {
+  const list=document.getElementById('hwHistoryList'), empty=document.getElementById('hwHistoryEmpty');
+  if(!hwData.sessions||hwData.sessions.length===0){ list.innerHTML=''; empty.textContent='还没有作业记录，快来开始第一次吧！'; return; }
+  empty.textContent='';
+  list.innerHTML=hwData.sessions.slice(0,30).map(s=>{
+    const smry=s.tasks.filter(t=>t.done).map(t=>SUBJECT_EMOJIS[t.subject]).join(' ');
+    return `<div class="hw-history-item">
+      <div style="flex:1;min-width:0;"><div style="font-weight:700;">${s.date}</div><div class="hw-hist-subjects">${smry} · ${s.duration}分钟</div></div>
+      <div class="hw-hist-stars">⭐ ${s.totalStars}</div>
+    </div>`;
+  }).join('');
+}
+
+function clearHomeworkHistory() {
+  if(confirm('确定要清除所有作业历史记录吗？')){ hwData.sessions=[]; saveHWState(hwData); renderHomeworkHistory(); }
+}
+
+// Auto-save on visibility change
+document.addEventListener('visibilitychange', () => { if (document.hidden) { saveState(); saveHWState(hwData); } });
+window.addEventListener('beforeunload', () => { saveState(); saveHWState(hwData); });
+
+// Service Worker registration for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
