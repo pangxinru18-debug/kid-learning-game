@@ -32,6 +32,13 @@
   --shadow-btn: 0 6px 20px rgba(0,0,0,0.12);
   --radius: 20px;
   --radius-btn: 16px;
+
+  --sc-sport: #FF8C42;
+  --sc-reading: #A66CFF;
+  --sc-chinese: #FF6B6B;
+  --sc-math: #4ECDC4;
+  --sc-english: #6BCB77;
+  --sc-schedule: #F0B429;
 }
 
 /* ========== Reset & Base ========== */
@@ -348,6 +355,92 @@ body {
 .hw-history-item .hw-hist-stars { font-weight: 800; font-size: 1.1rem; }
 .hw-history-item .hw-hist-subjects { font-size: 0.85rem; color: var(--text-light); }
 
+/* ========== Summer Checklist ========== */
+.subject-card.summer-card { border-bottom: 6px solid var(--sc-reading); }
+.subject-card.summer-card .card-title { color: var(--sc-reading); }
+
+.sc-datebar {
+  background: white; border-radius: var(--radius-btn); padding: 12px 16px;
+  box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center;
+  gap: 10px 14px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.sc-nav-btn {
+  background: var(--btn-secondary); color: white; border: none; border-radius: 50%;
+  width: 34px; height: 34px; font-size: 1.2rem; font-family: inherit; cursor: pointer;
+  transition: transform 0.15s;
+}
+.sc-nav-btn:active { transform: scale(0.9); }
+.sc-date-label { font-weight: 800; font-size: 1.05rem; min-width: 110px; text-align: center; }
+.sc-today-btn {
+  background: #EEE; color: #888; border: none; border-radius: 10px;
+  padding: 7px 14px; font-size: 0.82rem; font-weight: 700; font-family: inherit; cursor: pointer;
+}
+.sc-stat { font-size: 0.85rem; color: var(--text-light); font-weight: 700; white-space: nowrap; }
+
+.sc-strip { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.sc-strip-day { display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; font-family: inherit; }
+.sc-strip-ring {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: conic-gradient(var(--star) calc(var(--pct)*1%), #E8E8E8 0);
+  display: flex; align-items: center; justify-content: center;
+}
+.sc-strip-ring-inner {
+  width: 26px; height: 26px; border-radius: 50%; background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.68rem; font-weight: 800; color: var(--text);
+}
+.sc-strip-label { font-size: 0.65rem; color: var(--text-light); }
+.sc-strip-day.today .sc-strip-label { color: var(--btn-primary); font-weight: 800; }
+.sc-strip-day.active .sc-strip-ring { box-shadow: 0 0 0 3px var(--btn-primary); }
+
+.sc-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.sc-card { background: white; border-radius: var(--radius); padding: 16px 16px 14px; box-shadow: var(--shadow); border-left: 6px solid var(--c); }
+.sc-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.sc-card-title { font-weight: 800; font-size: 1.1rem; color: var(--c); }
+.sc-card-note { font-size: 0.78rem; color: var(--text-light); margin-top: 2px; }
+.sc-card-count { font-weight: 800; font-size: 0.95rem; color: var(--c); white-space: nowrap; }
+.sc-row { display: flex; align-items: center; gap: 10px; margin: 9px 0; }
+.sc-check {
+  flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px; border: 3px solid #E8E8E8;
+  background: white; cursor: pointer; font-family: inherit; font-size: 1.1rem; font-weight: 900;
+  display: flex; align-items: center; justify-content: center; color: transparent;
+  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+}
+.sc-check.done { background: var(--c); border-color: var(--c); color: white; transform: scale(1.06); }
+.sc-text {
+  flex: 1; min-width: 0; font-size: 0.98rem; line-height: 1.35; padding: 2px 0;
+  border-bottom: 2px dashed transparent; cursor: text;
+  user-select: text; -webkit-user-select: text;
+}
+.sc-text:focus { outline: none; border-color: var(--c); }
+.sc-del {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; border: none;
+  background: #F0F0F0; color: #AAA; font-size: 0.95rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.sc-addrow { display: flex; gap: 8px; margin-top: 6px; }
+.sc-input {
+  flex: 1; min-width: 0; padding: 8px 10px; border: 2px solid #E8E8E8; border-radius: 10px;
+  font-family: inherit; font-size: 0.9rem; background: #FAFAFA;
+}
+.sc-input:focus { border-color: var(--c); outline: none; background: white; }
+.sc-addbtn {
+  flex-shrink: 0; width: 34px; border: 2px dashed #D8D8D8; border-radius: 10px;
+  background: white; cursor: pointer; font-size: 1.1rem; color: #AAA; font-family: inherit;
+}
+.sc-chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 8px; }
+.sc-chip {
+  padding: 5px 12px; border-radius: 999px; border: 2px dashed #D8D8D8; background: white;
+  font-size: 0.78rem; font-weight: 700; color: #999; cursor: pointer; font-family: inherit;
+}
+.sc-progress {
+  background: white; border-radius: var(--radius-btn); padding: 12px 16px;
+  box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; margin-top: 14px;
+}
+.sc-progress-track { flex: 1; height: 10px; background: #E8E8E8; border-radius: 6px; overflow: hidden; }
+.sc-progress-fill { height: 100%; background: linear-gradient(90deg, var(--success), var(--star)); border-radius: 6px; transition: width 0.3s ease; }
+.sc-footer-note { text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 14px; font-style: italic; }
+
 /* ========== Reduced Motion ========== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
@@ -383,6 +476,11 @@ body {
         <div class="card-emoji">📝</div>
         <div class="card-title">作业模式</div>
         <div class="card-stars">番茄钟 · 高效完成</div>
+      </div>
+      <div class="subject-card summer-card" onclick="navigateTo('summer-checklist')">
+        <div class="card-emoji">🗓️</div>
+        <div class="card-title">暑假打卡</div>
+        <div class="card-stars">体育·阅读·语文·数学·英语</div>
       </div>
     </div>
     <button class="btn-big" style="background:var(--btn-secondary);color:white;max-width:220px;" onclick="navigateTo('achievements')">🏆 我的成就</button>
@@ -478,6 +576,28 @@ body {
     <div style="text-align:center;color:var(--text-light);margin:8px 0;" id="hwHistoryEmpty"></div>
     <button class="btn-big btn-menu" onclick="navigateTo('homework-setup')" style="margin-top:16px;">📝 返回作业模式</button>
     <button class="btn-big" style="background:#EEE;color:#999;max-width:200px;margin-top:8px;" onclick="clearHomeworkHistory()">🗑 清除历史</button>
+  </section>
+
+  <!-- Screen: Summer Checklist -->
+  <section class="screen" id="screen-summer-checklist">
+    <div class="menu-title" style="color:var(--sc-reading);">🗓️ 暑假打卡</div>
+    <div class="sc-datebar">
+      <button class="sc-nav-btn" onclick="scChangeDay(-1)" aria-label="前一天">‹</button>
+      <div class="sc-date-label" id="scDateLabel">7月8日 周三</div>
+      <button class="sc-nav-btn" onclick="scChangeDay(1)" aria-label="后一天">›</button>
+      <button class="sc-today-btn" onclick="scGoToday()">回到今天</button>
+      <span class="sc-stat">🔥 连续 <span id="scStreak">0</span> 天</span>
+      <span class="sc-stat">✅ 全勤 <span id="scFullDays">0</span> 天</span>
+      <button class="sc-today-btn" onclick="scResetDay()">清空今天</button>
+    </div>
+    <div class="sc-strip" id="scStrip"></div>
+    <div class="sc-cards" id="scCards"></div>
+    <div class="sc-progress">
+      <span class="sc-stat" id="scDayProgressLabel">0 / 14</span>
+      <div class="sc-progress-track"><div class="sc-progress-fill" id="scDayProgressFill" style="width:0%"></div></div>
+    </div>
+    <div class="sc-footer-note">短暂的假期不是松懈的时机，愿孩子以扎实的基础、良好的状态迎接三年级 ✨</div>
+    <button class="btn-big btn-menu" style="margin-top:14px;" onclick="navigateTo('home')">🏠 返回首页</button>
   </section>
 
   <!-- Screen: Math Menu -->
@@ -1328,8 +1448,9 @@ navigateTo = function(screenId) {
   if (screenId === 'achievements') renderAchievements();
   if (screenId === 'homework-setup') _hwRestoreInputs();
   if (screenId === 'homework-history') renderHomeworkHistory();
+  if (screenId === 'summer-checklist') scRender();
   document.getElementById('top-bar').style.display =
-    ['home','math-menu','english-menu','achievements','mult-select','picword-select','homework-setup','homework-history','homework-done'].includes(screenId) ? 'flex' : 'none';
+    ['home','math-menu','english-menu','achievements','mult-select','picword-select','homework-setup','homework-history','homework-done','summer-checklist'].includes(screenId) ? 'flex' : 'none';
 };
 
 // ==================== HOMEWORK MODE ====================
@@ -1550,9 +1671,302 @@ function clearHomeworkHistory() {
   if(confirm('确定要清除所有作业历史记录吗？')){ hwData.sessions=[]; saveHWState(hwData); renderHomeworkHistory(); }
 }
 
+// ==================== SUMMER CHECKLIST ====================
+const SC_STORAGE_KEY = 'summerChecklist';
+const SC_SECTIONS = [
+  { key:'sport', label:'体育锻炼', note:'关乎体测成绩，请坚持练习', colorVar:'--sc-sport',
+    items:[
+      { key:'sport1', def:'跳绳（分组练习）' },
+      { key:'sport2', def:'仰卧起坐（分组训练）' },
+      { key:'sport3', def:'50米短跑（练习2-3次）' },
+      { key:'sport4', def:'坐位体前屈（拉伸练习）' }
+    ] },
+  { key:'reading', label:'阅读打卡', note:'', colorVar:'--sc-reading',
+    items:[
+      { key:'read1', def:'晨读 20 分钟' },
+      { key:'read2', def:'亲子阅读 40 分钟（不间断）' }
+    ] },
+  { key:'chinese', label:'语文预习 · 三年级上册', note:'每天至少 1 小时', colorVar:'--sc-chinese', allowCustom:true,
+    items:[
+      { key:'cn1', def:'朗读当天课文，做到流利通顺' },
+      { key:'cn2', def:'认读生字、会写字，口头组词' },
+      { key:'cn3', def:'熟读并背诵要求内容' },
+      { key:'cn4', def:'阅读理解一篇（学有余力）' }
+    ] },
+  { key:'math', label:'计算与数学', note:'', colorVar:'--sc-math', allowCustom:true,
+    items:[
+      { key:'math1', def:'计算题一张，提高速度和正确率' },
+      { key:'math2', def:'数学讲解视频，掌握 1 个知识点' }
+    ] },
+  { key:'english', label:'英语', note:'', colorVar:'--sc-english', allowCustom:true,
+    items:[
+      { key:'en1', def:'听力练习' },
+      { key:'en2', def:'英语绘本阅读' }
+    ] },
+  { key:'schedule', label:'今日安排', note:'户外时间、游泳、乐高……当天的临时安排', colorVar:'--sc-schedule', allowCustom:true,
+    suggestions:['户外时间','游泳','乐高'], items:[] }
+];
+const SC_ALL_ITEMS = [];
+SC_SECTIONS.forEach(s => s.items.forEach(it => SC_ALL_ITEMS.push(it.key)));
+
+function scPad(n){ return n < 10 ? '0'+n : ''+n; }
+function scToISO(d){ return d.getFullYear()+'-'+scPad(d.getMonth()+1)+'-'+scPad(d.getDate()); }
+function scFromISO(iso){ const p=iso.split('-').map(Number); return new Date(p[0],p[1]-1,p[2]); }
+function scAddDays(iso,n){ const d=scFromISO(iso); d.setDate(d.getDate()+n); return scToISO(d); }
+const SC_WEEKDAY_NAMES = ['周日','周一','周二','周三','周四','周五','周六'];
+function scFormatLabel(iso){ const d=scFromISO(iso); return (d.getMonth()+1)+'月'+d.getDate()+'日 '+SC_WEEKDAY_NAMES[d.getDay()]; }
+function scFormatShort(iso){ const d=scFromISO(iso); return (d.getMonth()+1)+'/'+d.getDate(); }
+
+function scDefaultTemplate(){
+  const t={};
+  SC_SECTIONS.forEach(s => s.items.forEach(it => { t[it.key]=it.def; }));
+  return t;
+}
+
+function scLoadState(){
+  let raw;
+  try{ raw = JSON.parse(localStorage.getItem(SC_STORAGE_KEY)); }catch(e){ raw=null; }
+  const today = scToISO(new Date());
+  if(!raw || typeof raw !== 'object'){
+    raw = { viewDate:today, template:scDefaultTemplate(), checks:{}, customItems:{} };
+  }
+  if(!raw.template) raw.template = scDefaultTemplate();
+  if(!raw.checks) raw.checks = {};
+  if(!raw.customItems) raw.customItems = {};
+  if(!raw.viewDate) raw.viewDate = today;
+  return raw;
+}
+function scSaveState(){ try{ localStorage.setItem(SC_STORAGE_KEY, JSON.stringify(scState)); }catch(e){} }
+
+let scState = scLoadState();
+const SC_TODAY = scToISO(new Date());
+
+function scCheckKey(dateISO,itemKey){ return dateISO+'_'+itemKey; }
+function scIsChecked(dateISO,itemKey){ return !!scState.checks[scCheckKey(dateISO,itemKey)]; }
+function scSetChecked(dateISO,itemKey,val){
+  const k = scCheckKey(dateISO,itemKey);
+  if(val) scState.checks[k]=true; else delete scState.checks[k];
+}
+function scGetDateCustom(dateISO){
+  if(!scState.customItems[dateISO]) scState.customItems[dateISO]={};
+  return scState.customItems[dateISO];
+}
+function scGetSectionCustomItems(dateISO,sectionKey){
+  const dc = scState.customItems[dateISO];
+  return (dc && dc[sectionKey]) || [];
+}
+function scAddCustomItem(dateISO,sectionKey,label){
+  label = (label||'').trim();
+  if(!label) return false;
+  const dc = scGetDateCustom(dateISO);
+  if(!dc[sectionKey]) dc[sectionKey]=[];
+  if(dc[sectionKey].some(it=>it.label===label)) return false;
+  dc[sectionKey].push({ id:'c'+Date.now()+Math.random().toString(36).slice(2,6), label:label, checked:false });
+  scSaveState();
+  return true;
+}
+function scRemoveCustomItem(dateISO,sectionKey,id){
+  const dc = scState.customItems[dateISO];
+  if(!dc || !dc[sectionKey]) return;
+  dc[sectionKey] = dc[sectionKey].filter(it=>it.id!==id);
+  scSaveState();
+}
+function scDayTotalCount(dateISO){
+  let total = SC_ALL_ITEMS.length;
+  const dc = scState.customItems[dateISO];
+  if(dc) Object.keys(dc).forEach(k => { total += dc[k].length; });
+  return total;
+}
+function scDayDoneCount(dateISO){
+  let n=0;
+  SC_ALL_ITEMS.forEach(k => { if(scIsChecked(dateISO,k)) n++; });
+  const dc = scState.customItems[dateISO];
+  if(dc) Object.keys(dc).forEach(k => { dc[k].forEach(it => { if(it.checked) n++; }); });
+  return n;
+}
+function scIsDayFull(dateISO){
+  const total = scDayTotalCount(dateISO);
+  return total>0 && scDayDoneCount(dateISO)===total;
+}
+function scComputeStreak(){
+  let streak=0;
+  let cursor=SC_TODAY;
+  if(!scIsDayFull(cursor)) cursor=scAddDays(cursor,-1);
+  while(scIsDayFull(cursor)){ streak++; cursor=scAddDays(cursor,-1); }
+  return streak;
+}
+function scComputeTotalFullDays(){
+  const seen={};
+  Object.keys(scState.checks).forEach(k => { seen[k.slice(0,10)]=true; });
+  Object.keys(scState.customItems).forEach(d => { seen[d]=true; });
+  let count=0;
+  Object.keys(seen).forEach(d => { if(scIsDayFull(d)) count++; });
+  return count;
+}
+
+function scChangeDay(n){ scState.viewDate = scAddDays(scState.viewDate, n); scSaveState(); scRender(); }
+function scGoToday(){ scState.viewDate = SC_TODAY; scSaveState(); scRender(); }
+function scResetDay(){
+  if(!confirm('确定要清空 '+scFormatLabel(scState.viewDate)+' 的打卡记录吗？（含今天临时添加的项目）')) return;
+  SC_ALL_ITEMS.forEach(k => scSetChecked(scState.viewDate,k,false));
+  delete scState.customItems[scState.viewDate];
+  scSaveState(); scRender();
+}
+
+function scRenderControls(){
+  document.getElementById('scDateLabel').textContent = scFormatLabel(scState.viewDate);
+  document.getElementById('scStreak').textContent = scComputeStreak();
+  document.getElementById('scFullDays').textContent = scComputeTotalFullDays();
+}
+
+function scRenderStrip(){
+  const strip = document.getElementById('scStrip');
+  strip.innerHTML = '';
+  for(let i=6;i>=0;i--){
+    const iso = scAddDays(SC_TODAY, -i);
+    const done = scDayDoneCount(iso);
+    const pct = Math.round((done/scDayTotalCount(iso))*100);
+    const btn = document.createElement('button');
+    btn.className = 'sc-strip-day' + (iso===SC_TODAY?' today':'') + (iso===scState.viewDate?' active':'');
+    btn.innerHTML = `<span class="sc-strip-ring" style="--pct:${pct}"><span class="sc-strip-ring-inner">${done}</span></span><span class="sc-strip-label">${scFormatShort(iso)}</span>`;
+    btn.addEventListener('click', () => { scState.viewDate = iso; scSaveState(); scRender(); });
+    strip.appendChild(btn);
+  }
+}
+
+function scUpdateDayProgress(){
+  const done = scDayDoneCount(scState.viewDate);
+  const total = scDayTotalCount(scState.viewDate);
+  const pct = Math.round((done/total)*100);
+  document.getElementById('scDayProgressLabel').textContent = done+' / '+total;
+  document.getElementById('scDayProgressFill').style.width = pct+'%';
+}
+
+function scRenderCards(){
+  const wrap = document.getElementById('scCards');
+  wrap.innerHTML = '';
+  const dateISO = scState.viewDate;
+  SC_SECTIONS.forEach(section => {
+    const card = document.createElement('div');
+    card.className = 'sc-card';
+    card.style.setProperty('--c', `var(${section.colorVar})`);
+
+    const custom = scGetSectionCustomItems(dateISO, section.key);
+    const total = section.items.length + custom.length;
+    let done = 0;
+    section.items.forEach(it => { if(scIsChecked(dateISO,it.key)) done++; });
+    custom.forEach(it => { if(it.checked) done++; });
+
+    const head = document.createElement('div');
+    head.className = 'sc-card-head';
+    head.innerHTML = `<div><div class="sc-card-title">${section.label}</div>${section.note?`<div class="sc-card-note">${section.note}</div>`:''}</div>` +
+      `<div class="sc-card-count">${total===0 ? '' : (done===total ? '🌟' : done+'/'+total)}</div>`;
+    card.appendChild(head);
+
+    section.items.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'sc-row';
+      const text = document.createElement('div');
+      text.className = 'sc-text';
+      text.contentEditable = 'true';
+      text.spellcheck = false;
+      text.textContent = scState.template[it.key];
+      text.addEventListener('blur', () => {
+        scState.template[it.key] = text.textContent.trim() || scState.template[it.key];
+        scSaveState();
+      });
+      const check = document.createElement('button');
+      check.className = 'sc-check' + (scIsChecked(dateISO,it.key) ? ' done' : '');
+      check.textContent = '✓';
+      check.setAttribute('aria-label', section.label+' '+scState.template[it.key]);
+      check.addEventListener('click', () => {
+        const now = !scIsChecked(dateISO,it.key);
+        scSetChecked(dateISO,it.key,now);
+        scSaveState();
+        scRender();
+      });
+      row.appendChild(text);
+      row.appendChild(check);
+      card.appendChild(row);
+    });
+
+    custom.forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'sc-row';
+      const text = document.createElement('div');
+      text.className = 'sc-text';
+      text.contentEditable = 'true';
+      text.spellcheck = false;
+      text.textContent = it.label;
+      text.addEventListener('blur', () => {
+        it.label = text.textContent.trim() || it.label;
+        scSaveState();
+      });
+      const check = document.createElement('button');
+      check.className = 'sc-check' + (it.checked ? ' done' : '');
+      check.textContent = '✓';
+      check.addEventListener('click', () => {
+        it.checked = !it.checked;
+        scSaveState();
+        scRender();
+      });
+      const del = document.createElement('button');
+      del.className = 'sc-del';
+      del.textContent = '×';
+      del.addEventListener('click', () => {
+        scRemoveCustomItem(dateISO, section.key, it.id);
+        scRender();
+      });
+      row.appendChild(text);
+      row.appendChild(check);
+      row.appendChild(del);
+      card.appendChild(row);
+    });
+
+    if(section.allowCustom){
+      if(section.suggestions && section.suggestions.length){
+        const chips = document.createElement('div');
+        chips.className = 'sc-chips';
+        section.suggestions.forEach(label => {
+          const chip = document.createElement('button');
+          chip.className = 'sc-chip';
+          chip.textContent = '+ '+label;
+          chip.addEventListener('click', () => { if(scAddCustomItem(dateISO, section.key, label)) scRender(); });
+          chips.appendChild(chip);
+        });
+        card.appendChild(chips);
+      }
+      const addRow = document.createElement('div');
+      addRow.className = 'sc-addrow';
+      const input = document.createElement('input');
+      input.className = 'sc-input';
+      input.type = 'text';
+      input.placeholder = '临时加一项…';
+      const addBtn = document.createElement('button');
+      addBtn.className = 'sc-addbtn';
+      addBtn.textContent = '+';
+      const submit = () => { if(scAddCustomItem(dateISO, section.key, input.value)) scRender(); };
+      addBtn.addEventListener('click', submit);
+      input.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); submit(); } });
+      addRow.appendChild(input);
+      addRow.appendChild(addBtn);
+      card.appendChild(addRow);
+    }
+
+    wrap.appendChild(card);
+  });
+}
+
+function scRender(){
+  scRenderControls();
+  scRenderStrip();
+  scRenderCards();
+  scUpdateDayProgress();
+}
+
 // Auto-save on visibility change
-document.addEventListener('visibilitychange', () => { if (document.hidden) { saveState(); saveHWState(hwData); } });
-window.addEventListener('beforeunload', () => { saveState(); saveHWState(hwData); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { saveState(); saveHWState(hwData); scSaveState(); } });
+window.addEventListener('beforeunload', () => { saveState(); saveHWState(hwData); scSaveState(); });
 
 // Service Worker registration for PWA
 if ('serviceWorker' in navigator) {
