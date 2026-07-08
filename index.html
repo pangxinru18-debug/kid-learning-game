@@ -1776,6 +1776,11 @@ function scRemoveCustomItem(dateISO,sectionKey,id){
   dc[sectionKey] = dc[sectionKey].filter(it=>it.id!==id);
   scSaveState();
 }
+function scAwardStars(delta){
+  gameState.totalStars = Math.max(0, gameState.totalStars + delta);
+  saveState();
+  updateTopBar();
+}
 function scDayTotalCount(dateISO){
   let total = SC_ALL_ITEMS.length;
   const dc = scState.customItems[dateISO];
@@ -1813,6 +1818,7 @@ function scChangeDay(n){ scState.viewDate = scAddDays(scState.viewDate, n); scSa
 function scGoToday(){ scState.viewDate = SC_TODAY; scSaveState(); scRender(); }
 function scResetDay(){
   if(!confirm('确定要清空 '+scFormatLabel(scState.viewDate)+' 的打卡记录吗？（含今天临时添加的项目）')) return;
+  scAwardStars(-scDayDoneCount(scState.viewDate));
   SC_ALL_ITEMS.forEach(k => scSetChecked(scState.viewDate,k,false));
   delete scState.customItems[scState.viewDate];
   scSaveState(); scRender();
@@ -1889,6 +1895,7 @@ function scRenderCards(){
         const now = !scIsChecked(dateISO,it.key);
         scSetChecked(dateISO,it.key,now);
         scSaveState();
+        scAwardStars(now ? 1 : -1);
         scRender();
       });
       row.appendChild(text);
@@ -1915,6 +1922,7 @@ function scRenderCards(){
       check.addEventListener('click', () => {
         it.checked = !it.checked;
         scSaveState();
+        scAwardStars(it.checked ? 1 : -1);
         scRender();
       });
       const del = document.createElement('button');
@@ -1922,6 +1930,7 @@ function scRenderCards(){
       del.className = 'sc-del';
       del.textContent = '×';
       del.addEventListener('click', () => {
+        if(it.checked) scAwardStars(-1);
         scRemoveCustomItem(dateISO, section.key, it.id);
         scRender();
       });
