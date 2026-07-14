@@ -1686,7 +1686,7 @@ const SC_SECTIONS = [
       { key:'sport3', def:'50米短跑（练习2-3次）' },
       { key:'sport4', def:'坐位体前屈（拉伸练习）' }
     ] },
-  { key:'reading', label:'阅读打卡', note:'', colorVar:'--sc-reading',
+  { key:'reading', label:'阅读打卡学习交流群', note:'', colorVar:'--sc-reading',
     items:[
       { key:'read1', def:'晨读 20 分钟' },
       { key:'read2', def:'亲子阅读 40 分钟（不间断）' }
@@ -1696,17 +1696,20 @@ const SC_SECTIONS = [
       { key:'cn1', def:'朗读当天课文，做到流利通顺' },
       { key:'cn2', def:'认读生字、会写字，口头组词' },
       { key:'cn3', def:'熟读并背诵要求内容' },
-      { key:'cn4', def:'阅读理解一篇（学有余力）' }
+      { key:'cn4', def:'阅读理解一篇（学有余力）' },
+      { key:'cn5', def:'练字每日一张' }
     ] },
   { key:'math', label:'计算与数学', note:'', colorVar:'--sc-math', allowCustom:true,
     items:[
       { key:'math1', def:'计算题一张，提高速度和正确率' },
-      { key:'math2', def:'数学讲解视频，掌握 1 个知识点' }
+      { key:'math2', def:'数学讲解视频，掌握 1 个知识点' },
+      { key:'math3', def:'数学课本 3 页每天' }
     ] },
   { key:'english', label:'英语', note:'', colorVar:'--sc-english', allowCustom:true,
     items:[
       { key:'en1', def:'听力练习' },
-      { key:'en2', def:'英语绘本阅读' }
+      { key:'en2', def:'英语绘本阅读' },
+      { key:'en3', def:'复习私教课的单词' }
     ] },
   { key:'schedule', label:'今日安排', note:'户外时间、游泳、乐高……当天的临时安排', colorVar:'--sc-schedule', allowCustom:true,
     suggestions:['户外时间','游泳','乐高'], items:[] }
@@ -1736,6 +1739,8 @@ function scLoadState(){
     raw = { viewDate:today, template:scDefaultTemplate(), checks:{}, customItems:{} };
   }
   if(!raw.template) raw.template = scDefaultTemplate();
+  const defaults = scDefaultTemplate();
+  Object.keys(defaults).forEach(k => { if(!(k in raw.template)) raw.template[k] = defaults[k]; });
   if(!raw.checks) raw.checks = {};
   if(!raw.customItems) raw.customItems = {};
   if(!raw.viewDate) raw.viewDate = today;

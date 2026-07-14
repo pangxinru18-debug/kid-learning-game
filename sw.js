@@ -1,4 +1,4 @@
-const CACHE = 'kid-learn-v4';
+const CACHE = 'kid-learn-v5';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/','/index.html'])));
   self.skipWaiting();
